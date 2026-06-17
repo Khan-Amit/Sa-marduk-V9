@@ -87,9 +87,6 @@
             font-size: 0.9rem;
             color: #8b949e;
         }
-        .badge-safe { color: #3fb950; }
-        .badge-mal { color: #f85149; }
-        .badge-neu { color: #d29922; }
     </style>
 </head>
 <body>
@@ -117,9 +114,10 @@
 
     <script>
         // ================================================================
-        // 1. THE 36 GROUPS (FULL DEFINITION)
+        // 1. THE 36 GROUPS (NOW WITH GROUP 0 AS FALLBACK)
         // ================================================================
         const GROUPS = {
+            0: { name: 'General System Inquiry', domain: 'unknown', trait: 'Unclassified' },
             1: { name: 'Boot Loader', domain: 'kernel', trait: 'Root-Trust Only' },
             2: { name: 'Kernel Core', domain: 'kernel', trait: 'Root-Trust Only' },
             3: { name: 'Device Drivers', domain: 'kernel', trait: 'Root-Trust Only' },
@@ -159,7 +157,7 @@
         };
 
         // ================================================================
-        // 2. NOISE FILTER (Lawyer/Tailor rule)
+        // 2. NOISE FILTER
         // ================================================================
         function isRelevantQuery(input) {
             const keywords = [
@@ -174,7 +172,7 @@
         }
 
         // ================================================================
-        // 3. CLASSIFIER (Matches query to relevant groups)
+        // 3. CLASSIFIER (FALLBACK = GROUP 0, NOT USB)
         // ================================================================
         function classifyQuery(input) {
             const lower = input.toLowerCase();
@@ -184,7 +182,6 @@
                 const g = GROUPS[id];
                 const domainMatch = lower.includes(g.domain);
                 const nameMatch = lower.includes(g.name.toLowerCase());
-                // Split trait into words (e.g., "Root-Trust Only" -> ['root', 'trust', 'only'])
                 const traitWords = g.trait.toLowerCase().split(/[-\s]+/);
                 const traitMatch = traitWords.some(word => lower.includes(word));
 
@@ -193,15 +190,15 @@
                 }
             }
 
-            // If nothing matched, default to USB Drives (group 27) as fallback
+            // FIX: Fallback to Group 0 (General System Inquiry) instead of USB
             if (matched.length === 0) {
-                matched.push({ id: 27, ...GROUPS[27] });
+                matched.push({ id: 0, ...GROUPS[0] });
             }
             return matched;
         }
 
         // ================================================================
-        // 4. VOICE OF BRAHMA (Ternary logic: -1, 0, +1)
+        // 4. VOICE OF BRAHMA (Ternary: -1, 0, +1)
         // ================================================================
         function voiceOfBrahma(query, group) {
             const lower = query.toLowerCase();
@@ -232,10 +229,9 @@
         }
 
         // ================================================================
-        // 5. ENIGMA TRANSLATOR (Renders HTML output)
+        // 5. ENIGMA TRANSLATOR
         // ================================================================
         function enigmaTranslator(query, groups, ternaries) {
-            // Noise check
             if (!isRelevantQuery(query)) {
                 return {
                     output: 'VOID: Irrelevant query.',
@@ -293,10 +289,9 @@
         }
 
         // ================================================================
-        // 6. MAIN PROCESSOR (The full pipeline)
+        // 6. MAIN PROCESSOR
         // ================================================================
         function processQuery(inputQuery) {
-            // Step A: Filter noise
             if (!isRelevantQuery(inputQuery)) {
                 return {
                     status: 'NOISE_REJECTED',
@@ -304,13 +299,8 @@
                 };
             }
 
-            // Step B: Classify
             const matchedGroups = classifyQuery(inputQuery);
-
-            // Step C: Ternary logic for each group
             const ternaries = matchedGroups.map(g => voiceOfBrahma(inputQuery, g));
-
-            // Step D: Enigma output
             const result = enigmaTranslator(inputQuery, matchedGroups, ternaries);
 
             return {
@@ -336,7 +326,6 @@
             resultDiv.innerHTML = output.html;
         });
 
-        // Also run if user presses Enter key
         document.getElementById('queryInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 document.getElementById('analyzeBtn').click();
