@@ -1,0 +1,13 @@
+[Unit]
+Description=Sa Akhran® Sluice Gate
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/sa_akhran_guard
+ExecStart=/usr/bin/python3 /root/sa_akhran_guard/guard_daemon.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
