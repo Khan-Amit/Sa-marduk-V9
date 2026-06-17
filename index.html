@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa-marduk-V9 · Landing</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Sa-marduk-V9</h1>
+        <p>Virus & Spam Guard · Seliim Ahmed</p>
+        <p><small>amit.khanna.1082@gmail.com</small></p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="page2_login.html">2. Login (IMEI / Phone)</a></li>
+            <li><a href="page3_energy.html">3. Energy Dial</a></li>
+            <li><a href="page4_speed.html">4. Data Speed</a></li>
+            <li><a href="page5_dashboard.html">5. Dashboard</a></li>
+            <li><a href="page6_instructions.html">6. Instructions</a></li>
+            <li><a href="page7_quarantine.html">7. Quarantine</a></li>
+            <li><a href="page8_settings.html">8. Settings</a></li>
+            <li><a href="page9_queries_high.html">9. High Queries</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <h2>External Data Source Active</h2>
+        <p>Live data pulled from data center / local hardware.</p>
+        <div id="live-status">Status: <span id="status-text">Connecting...</span></div>
+    </section>
+
+    <footer>
+        <p>All rights reserved · Sa Akhran®</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        // On load, check backend health
+        window.onload = function() {
+            fetch('/api/health')
+                .then(r => r.json())
+                .then(d => document.getElementById('status-text').innerText = d.status)
+                .catch(() => document.getElementById('status-text').innerText = 'Offline');
+        };
+    </script>
+</body>
+</html>
