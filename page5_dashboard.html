@@ -1,11 +1,100 @@
-<h3>Login Traffic</h3>
-<ul id="dashboardTraffic"></ul>
-<script>
-const db = JSON.parse(localStorage.getItem('sa_traffic_db') || '[]');
-const ul = document.getElementById('dashboardTraffic');
-db.forEach(entry => {
-    const li = document.createElement('li');
-    li.textContent = `${entry.name} (${entry.phone}) – ${entry.time}`;
-    ul.appendChild(li);
-});
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa-marduk-V9 · Dashboard</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            font-size: 20px;
+        }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        h1 { color: #58a6ff; font-size: 2.2rem; }
+        .back-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+        .card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #30363d;
+            font-size: 1.3rem;
+        }
+        .stat-row:last-child { border-bottom: none; }
+        .stat-label { color: #8b949e; }
+        .stat-value { color: #c9d1d9; font-weight: bold; }
+        footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📊 Dashboard</h1>
+        <a href="index.html" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="card" id="dashContent">
+        <p style="font-size:1.4rem;">Loading stats...</p>
+    </div>
+
+    <footer>All rights reserved · Sa Akhran®</footer>
+
+    <script>
+        function renderDashboard() {
+            const container = document.getElementById('dashContent');
+            // Get latest readings from localStorage
+            const sensors = JSON.parse(localStorage.getItem('sa_sensors') || '[]');
+            const logins = JSON.parse(localStorage.getItem('sa_logins') || '[]');
+
+            const latest = (type) => {
+                const entries = sensors.filter(s => s.type === type);
+                return entries.length > 0 ? entries[entries.length-1].value : 'N/A';
+            };
+
+            const energy = latest('energy');
+            const speed = latest('speed');
+            const storage = latest('storage');
+
+            const html = `
+                <div class="stat-row"><span class="stat-label">🔋 Battery</span><span class="stat-value">${energy}%</span></div>
+                <div class="stat-row"><span class="stat-label">🌐 Network Speed</span><span class="stat-value">${speed !== 'N/A' ? speed.toFixed(1) : 'N/A'} Mbps</span></div>
+                <div class="stat-row"><span class="stat-label">💾 Storage Used</span><span class="stat-value">${storage !== 'N/A' ? Math.round(storage) + '%' : 'N/A'}</span></div>
+                <div class="stat-row"><span class="stat-label">👥 Total Logins</span><span class="stat-value">${logins.length}</span></div>
+                <div class="stat-row"><span class="stat-label">📅 Last Login</span><span class="stat-value">${logins.length > 0 ? new Date(logins[logins.length-1].timestamp).toLocaleString() : 'None'}</span></div>
+            `;
+            container.innerHTML = html;
+        }
+        renderDashboard();
+        setInterval(renderDashboard, 5000);
+    </script>
+</body>
+</html>
