@@ -3,48 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sa-marduk-V9 · Landing</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Sa-marduk-V9 · Home</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            font-size: 20px; /* Bigger base */
+        }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        h1 { color: #58a6ff; font-size: 2.5rem; }
+        .sub { color: #8b949e; font-size: 1.2rem; }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .nav-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 25px 10px;
+            text-align: center;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .nav-btn:hover {
+            background: #1c2333;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+        .nav-btn small {
+            display: block;
+            font-weight: normal;
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-top: 5px;
+        }
+        footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+        @media (max-width: 500px) {
+            .nav-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Sa-marduk-V9</h1>
-        <p>Virus & Spam Guard · Seliim Ahmed</p>
-        <p><small>amit.khanna.1082@gmail.com</small></p>
+        <h1>📱 Sa-marduk-V9</h1>
+        <p class="sub">Virus & Spam Guard · Seliim Ahmed</p>
+        <p style="font-size:0.9rem; color:#8b949e;">amit.khanna.1082@gmail.com</p>
     </header>
 
-    <nav>
-        <ul>
-            <li><a href="page2_login.html">2. Login (IMEI / Phone)</a></li>
-            <li><a href="page3_energy.html">3. Energy Dial</a></li>
-            <li><a href="page4_speed.html">4. Data Speed</a></li>
-            <li><a href="page5_dashboard.html">5. Dashboard</a></li>
-            <li><a href="page6_instructions.html">6. Instructions</a></li>
-            <li><a href="page7_quarantine.html">7. Quarantine</a></li>
-            <li><a href="page8_settings.html">8. Settings</a></li>
-            <li><a href="page9_queries_high.html">9. High Queries</a></li>
-        </ul>
-    </nav>
+    <div class="nav-grid">
+        <a href="login.html" class="nav-btn">🔐 Login <small>Save your identity</small></a>
+        <a href="energy.html" class="nav-btn">⚡ Energy <small>Battery & charging</small></a>
+        <a href="speed.html" class="nav-btn">🌐 Speed <small>Network downlink</small></a>
+        <a href="quarantine.html" class="nav-btn">🛡️ Quarantine <small>Storage threats</small></a>
+        <a href="queries.html" class="nav-btn">🚨 High Queries <small>System alerts</small></a>
+        <a href="dashboard.html" class="nav-btn">📊 Dashboard <small>All stats</small></a>
+    </div>
 
-    <section>
-        <h2>External Data Source Active</h2>
-        <p>Live data pulled from data center / local hardware.</p>
-        <div id="live-status">Status: <span id="status-text">Connecting...</span></div>
-    </section>
-
-    <footer>
-        <p>All rights reserved · Sa Akhran®</p>
-    </footer>
-
-    <script src="assets/js/app.js"></script>
-    <script>
-        // On load, check backend health
-        window.onload = function() {
-            fetch('/api/health')
-                .then(r => r.json())
-                .then(d => document.getElementById('status-text').innerText = d.status)
-                .catch(() => document.getElementById('status-text').innerText = 'Offline');
-        };
-    </script>
+    <footer>All rights reserved · Sa Akhran®</footer>
 </body>
 </html>
