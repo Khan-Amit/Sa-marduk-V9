@@ -11,7 +11,7 @@
             background: #0d1117;
             color: #c9d1d9;
             padding: 20px;
-            max-width: 850px;
+            max-width: 900px;
             margin: auto;
             font-size: 18px;
         }
@@ -42,22 +42,41 @@
             padding: 25px;
             margin: 20px 0;
         }
-        input, button {
-            font-size: 1.2rem;
+        .row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .col {
+            flex: 1;
+            min-width: 180px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+        select, input, button {
+            font-size: 1.1rem;
             padding: 12px;
             width: 100%;
-            margin: 8px 0;
+            margin: 5px 0;
             border-radius: 8px;
             border: 2px solid #30363d;
             background: #0d1117;
             color: #c9d1d9;
         }
+        select option { background: #0d1117; }
         button {
             background: #238636;
             color: #fff;
             border: none;
             font-weight: bold;
             cursor: pointer;
+            margin-top: 15px;
         }
         button:hover { background: #2ea44f; }
         #result {
@@ -87,6 +106,18 @@
             font-size: 0.9rem;
             color: #8b949e;
         }
+        .query-preview {
+            background: #0d1117;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed #30363d;
+            margin: 10px 0;
+            color: #d29922;
+            font-family: monospace;
+        }
+        @media (max-width: 600px) {
+            .row { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -97,11 +128,57 @@
     </header>
 
     <div class="card">
-        <h2>Enter a system query</h2>
-        <p style="color:#8b949e; font-size:0.9rem;">
-            Example: "Check USB drive for virus" or "Analyze network packet 443"
-        </p>
-        <input type="text" id="queryInput" placeholder="e.g. Suspicious file detected on boot sector">
+        <h2>Threat Classification</h2>
+        <p style="color:#8b949e; font-size:0.9rem;">Select threat type and target drive, then optionally add custom details.</p>
+
+        <div class="row">
+            <div class="col">
+                <label for="threatSelect">🚨 Threat Identifier</label>
+                <select id="threatSelect">
+                    <option value="Virus">🦠 Virus</option>
+                    <option value="Malware">💀 Malware</option>
+                    <option value="Ransomware">💰 Ransomware</option>
+                    <option value="Spam">📧 Spam</option>
+                    <option value="Phishing">🎣 Phishing</option>
+                    <option value="Exploit">⚡ Exploit</option>
+                    <option value="Trojan">🐴 Trojan</option>
+                    <option value="Keylogger">⌨️ Keylogger</option>
+                    <option value="Adware">📢 Adware</option>
+                    <option value="Rootkit">👻 Rootkit</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="driveSelect">💾 Target Drive / Device</label>
+                <select id="driveSelect">
+                    <optgroup label="Servers">
+                        <option value="Server 1">🖥️ Server 1</option>
+                        <option value="Server 2">🖥️ Server 2</option>
+                        <option value="Server 3">🖥️ Server 3</option>
+                    </optgroup>
+                    <optgroup label="Hard Disks">
+                        <option value="HDD 1">💽 HDD 1</option>
+                        <option value="HDD 2">💽 HDD 2</option>
+                        <option value="HDD 3">💽 HDD 3</option>
+                    </optgroup>
+                    <optgroup label="Portable">
+                        <option value="USB Drive" selected>🔌 USB Drive</option>
+                        <option value="Cell Phone">📱 Cell Phone</option>
+                        <option value="External SSD">⚡ External SSD</option>
+                    </optgroup>
+                    <optgroup label="Cloud">
+                        <option value="Cloud Volume">☁️ Cloud Volume</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+
+        <div class="col" style="margin-top:10px;">
+            <label for="queryInput">✏️ Custom Query (optional)</label>
+            <input type="text" id="queryInput" placeholder="e.g. suspicious file detected in temp folder">
+        </div>
+
+        <div class="query-preview" id="queryPreview">📝 Query: Virus detected on USB Drive</div>
+
         <button id="analyzeBtn">▶ Classify & Analyze</button>
     </div>
 
@@ -114,7 +191,7 @@
 
     <script>
         // ================================================================
-        // 1. THE 36 GROUPS (NOW WITH GROUP 0 AS FALLBACK)
+        // 1. THE 36 GROUPS (WITH GROUP 0 AS FALLBACK)
         // ================================================================
         const GROUPS = {
             0: { name: 'General System Inquiry', domain: 'unknown', trait: 'Unclassified' },
@@ -165,14 +242,14 @@
                 'storage', 'disk', 'usb', 'boot', 'execute', 'script',
                 'malware', 'virus', 'spam', 'permission', 'encrypt',
                 'connection', 'socket', 'port', 'registry', 'cache',
-                'heap', 'stack', 'cpu', 'gpu', 'ram'
+                'heap', 'stack', 'cpu', 'gpu', 'ram', 'server', 'hdd', 'phone', 'cloud'
             ];
             const lower = input.toLowerCase();
             return keywords.some(kw => lower.includes(kw));
         }
 
         // ================================================================
-        // 3. CLASSIFIER (FALLBACK = GROUP 0, NOT USB)
+        // 3. CLASSIFIER (FALLBACK = GROUP 0)
         // ================================================================
         function classifyQuery(input) {
             const lower = input.toLowerCase();
@@ -190,7 +267,6 @@
                 }
             }
 
-            // FIX: Fallback to Group 0 (General System Inquiry) instead of USB
             if (matched.length === 0) {
                 matched.push({ id: 0, ...GROUPS[0] });
             }
@@ -205,7 +281,8 @@
 
             const malIndicators = [
                 'virus', 'malware', 'trojan', 'ransom', 'spam', 'phish',
-                'exploit', 'inject', 'buffer overflow', 'backdoor', 'keylog'
+                'exploit', 'inject', 'buffer overflow', 'backdoor', 'keylog',
+                'adware', 'rootkit', 'worm', 'spyware'
             ];
             const safeIndicators = [
                 'trusted', 'signature', 'verified', 'official', 'update',
@@ -215,13 +292,8 @@
             let malScore = malIndicators.filter(w => lower.includes(w)).length;
             let safeScore = safeIndicators.filter(w => lower.includes(w)).length;
 
-            // Group bias
-            if (group.trait === 'Root-Trust Only' || group.trait === 'Hash-Anchored') {
-                safeScore += 2;
-            }
-            if (group.trait === 'Bayesian-Predictive') {
-                malScore += 1;
-            }
+            if (group.trait === 'Root-Trust Only' || group.trait === 'Hash-Anchored') safeScore += 2;
+            if (group.trait === 'Bayesian-Predictive') malScore += 1;
 
             if (malScore > safeScore) return -1;
             if (safeScore > malScore) return 1;
@@ -311,21 +383,37 @@
         }
 
         // ================================================================
-        // 7. UI BINDING
+        // 7. UI BINDING WITH DROPDOWNS
         // ================================================================
-        document.getElementById('analyzeBtn').addEventListener('click', function() {
-            const input = document.getElementById('queryInput').value.trim();
-            const resultDiv = document.getElementById('result');
-
-            if (!input) {
-                resultDiv.innerHTML = '<p style="color:#f85149;">⚠️ Please enter a query.</p>';
-                return;
+        function buildQuery() {
+            const threat = document.getElementById('threatSelect').value;
+            const drive = document.getElementById('driveSelect').value;
+            const custom = document.getElementById('queryInput').value.trim();
+            let query = `${threat} detected on ${drive}`;
+            if (custom) {
+                query += ` - ${custom}`;
             }
+            return query;
+        }
 
-            const output = processQuery(input);
+        // Update preview
+        function updatePreview() {
+            document.getElementById('queryPreview').textContent = `📝 Query: ${buildQuery()}`;
+        }
+        document.getElementById('threatSelect').addEventListener('change', updatePreview);
+        document.getElementById('driveSelect').addEventListener('change', updatePreview);
+        document.getElementById('queryInput').addEventListener('input', updatePreview);
+        updatePreview();
+
+        // Analyze
+        document.getElementById('analyzeBtn').addEventListener('click', function() {
+            const query = buildQuery();
+            const resultDiv = document.getElementById('result');
+            const output = processQuery(query);
             resultDiv.innerHTML = output.html;
         });
 
+        // Enter key support on custom query
         document.getElementById('queryInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 document.getElementById('analyzeBtn').click();
