@@ -3,60 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sa-marduk-V9 · Login</title>
+    <title>Sa-marduk-V9 · Login & Traffic</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:monospace; background:#0b0b0b; color:#b0b0b0; padding:20px; max-width:800px; margin:0 auto; }
-        header, footer { border-bottom:1px solid #2a2a2a; padding:10px 0; margin-bottom:20px; }
-        footer { border-top:1px solid #2a2a2a; border-bottom:none; margin-top:40px; text-align:center; font-size:0.8em; color:#555; }
-        h1 { color:#0f0; font-size:1.6em; }
-        a { color:#0f0; text-decoration:none; }
-        a:hover { text-decoration:underline; }
-        section { background:#111; padding:20px; border-radius:6px; border:1px solid #1f1f1f; }
-        input, button { display:block; width:100%; padding:10px; margin:8px 0; background:#1a1a1a; border:1px solid #333; color:#b0b0b0; font-family:monospace; border-radius:4px; }
-        button { background:#0f0; color:#000; font-weight:bold; border:none; cursor:pointer; }
-        button:hover { background:#5f5; }
-        #login-result { margin-top:15px; font-weight:bold; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'Segoe UI',sans-serif;
+            background:#0d1117;
+            color:#c9d1d9;
+            padding:20px;
+            max-width:600px;
+            margin:0 auto;
+        }
+        .card{
+            background:#161b22;
+            padding:25px;
+            border-radius:8px;
+            border:1px solid #30363d;
+            margin-bottom:20px;
+        }
+        h2{color:#58a6ff;margin-bottom:5px}
+        .sub{color:#8b949e;font-size:14px;margin-bottom:20px}
+        .input-group{margin-bottom:15px}
+        label{display:block;margin-bottom:5px;font-size:14px}
+        input{
+            width:100%;
+            padding:10px;
+            background:#0d1117;
+            border:1px solid #30363d;
+            border-radius:6px;
+            color:white;
+            font-size:16px;
+        }
+        input:focus{border-color:#58a6ff;outline:none}
+        button{
+            width:100%;
+            padding:12px;
+            background:#238636;
+            color:white;
+            border:none;
+            border-radius:6px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+        button:hover{background:#2ea44f}
+        .msg{margin-top:12px;font-weight:bold}
+        .success{color:#3fb950}
+        .error{color:#f85149}
+
+        /* Traffic Table */
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:10px;
+            font-size:14px;
+        }
+        th,td{
+            border-bottom:1px solid #30363d;
+            padding:10px 5px;
+            text-align:left;
+        }
+        th{color:#58a6ff;font-weight:normal}
+        .empty{color:#8b949e;padding:15px 0;text-align:center}
+        .badge{
+            background:#238636;
+            color:#fff;
+            padding:2px 8px;
+            border-radius:12px;
+            font-size:11px;
+        }
+        .clear-btn{
+            background:#da3633;
+            margin-top:10px;
+            font-size:14px;
+            padding:8px;
+        }
+        .clear-btn:hover{background:#f85149}
     </style>
 </head>
 <body>
-    <header>
-        <h1>Login · IMEI Bonding</h1>
-        <a href="index.html">← Back</a>
-    </header>
-    <section>
-        <form id="login-form">
-            <label>Full Name</label>
-            <input type="text" id="user-name" placeholder="Seliim Ahmed" required>
-            <label>Phone Number</label>
-            <input type="tel" id="user-phone" placeholder="+66615729906" required>
-            <label>IMEI (or Device ID)</label>
-            <input type="text" id="user-imei" placeholder="865926067381640" required>
-            <button type="submit">Bind Session</button>
-        </form>
-        <div id="login-result"></div>
-    </section>
-    <footer>
-        <p>All rights reserved · Sa Akhran®</p>
-    </footer>
-    <script>
-        document.getElementById('login-form').onsubmit = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('user-name').value.trim();
-            const phone = document.getElementById('user-phone').value.trim();
-            const imei = document.getElementById('user-imei').value.trim();
-            const resultDiv = document.getElementById('login-result');
 
-            // Valid credentials (exactly as per owner)
-            if (name === 'Seliim Ahmed' && imei === '865926067381640') {
-                resultDiv.innerText = '✅ Bind successful. Welcome ' + name;
-                resultDiv.style.color = '#0f0';
-                localStorage.setItem('session', JSON.stringify({name, phone, imei}));
-            } else {
-                resultDiv.innerText = '❌ Bind failed. Check Name and IMEI.';
-                resultDiv.style.color = '#f00';
+    <!-- ===== LOGIN CARD ===== -->
+    <div class="card">
+        <h2>🔐 Sa-marduk-V9</h2>
+        <p class="sub">Virus & Spam Guard · Seliim Ahmed</p>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="userName" placeholder="Seliim Ahmed" required>
+            </div>
+            <div class="input-group">
+                <label>Phone Number</label>
+                <input type="tel" id="userPhone" placeholder="+66615729906" required>
+            </div>
+            <button type="submit">✅ Save Login to Database</button>
+        </form>
+        <div id="loginMsg" class="msg"></div>
+    </div>
+
+    <!-- ===== TRAFFIC DATABASE CARD ===== -->
+    <div class="card">
+        <h2>📊 Login Traffic</h2>
+        <p class="sub">All saved entries (phone memory)</p>
+
+        <div id="trafficContainer">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="trafficBody">
+                    <!-- Filled by JavaScript -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty">No logins saved yet.</div>
+        </div>
+
+        <button id="clearAllBtn" class="clear-btn">🗑️ Clear All Traffic</button>
+    </div>
+
+    <script>
+        // -------- DATABASE (your "software database") --------
+        // Uses localStorage – saves forever on your phone.
+        const DB_KEY = 'sa_traffic_db';
+
+        // Load all records
+        function getTraffic() {
+            const data = localStorage.getItem(DB_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // Save a new record
+        function addTraffic(name, phone) {
+            const traffic = getTraffic();
+            const now = new Date();
+            const timestamp = now.toLocaleString('en-US', {
+                day: '2-digit', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+            traffic.push({
+                id: Date.now(),
+                name: name,
+                phone: phone,
+                time: timestamp
+            });
+            localStorage.setItem(DB_KEY, JSON.stringify(traffic));
+            renderTraffic();
+            return traffic;
+        }
+
+        // Clear all
+        function clearTraffic() {
+            localStorage.removeItem(DB_KEY);
+            renderTraffic();
+        }
+
+        // -------- RENDER TABLE --------
+        function renderTraffic() {
+            const traffic = getTraffic();
+            const tbody = document.getElementById('trafficBody');
+            const empty = document.getElementById('emptyState');
+
+            if (traffic.length === 0) {
+                tbody.innerHTML = '';
+                empty.style.display = 'block';
+                return;
             }
-        };
+            empty.style.display = 'none';
+
+            let html = '';
+            // Show latest first (reverse order)
+            const reversed = [...traffic].reverse();
+            reversed.forEach((entry, index) => {
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${escapeHtml(entry.name)}</strong></td>
+                        <td>${escapeHtml(entry.phone)}</td>
+                        <td style="font-size:12px;color:#8b949e;">${escapeHtml(entry.time)}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // Simple security against XSS (just in case)
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // -------- HANDLE LOGIN FORM --------
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('userName').value.trim();
+            const phone = document.getElementById('userPhone').value.trim();
+            const msg = document.getElementById('loginMsg');
+
+            if (!name || !phone) {
+                msg.textContent = '❌ Please fill both fields.';
+                msg.className = 'msg error';
+                return;
+            }
+
+            // Save to database
+            addTraffic(name, phone);
+
+            msg.textContent = '✅ Login saved successfully!';
+            msg.className = 'msg success';
+
+            // Clear form fields for next entry
+            document.getElementById('userName').value = '';
+            document.getElementById('userPhone').value = '';
+
+            // Auto-hide success message after 3 seconds
+            setTimeout(() => {
+                msg.textContent = '';
+                msg.className = 'msg';
+            }, 3000);
+        });
+
+        // -------- CLEAR ALL --------
+        document.getElementById('clearAllBtn').addEventListener('click', function() {
+            if (confirm('Delete all saved login records?')) {
+                clearTraffic();
+            }
+        });
+
+        // -------- INITIAL RENDER --------
+        renderTraffic();
     </script>
+
 </body>
 </html>
