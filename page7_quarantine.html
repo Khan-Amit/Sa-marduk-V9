@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa-marduk-V9 · Quarantine</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Quarantine List</h1>
+        <a href="index.html">← Back</a>
+    </header>
+
+    <section>
+        <table id="quarantine-table">
+            <thead>
+                <tr><th>File / Process</th><th>Risk Level</th><th>Action</th></tr>
+            </thead>
+            <tbody id="quarantine-body">
+                <tr><td colspan="3">Loading from external DB...</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <p>All rights reserved · Sa Akhran®</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        function loadQuarantine() {
+            fetch('/api/quarantine_list')
+                .then(r => r.json())
+                .then(list => {
+                    const tbody = document.getElementById('quarantine-body');
+                    tbody.innerHTML = '';
+                    if (list.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="3">Clean – no threats</td></tr>';
+                        return;
+                    }
+                    list.forEach(item => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${item.file}</td><td>${item.risk}</td><td>Quarantined</td>`;
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(() => {
+                    document.getElementById('quarantine-body').innerHTML = '<tr><td colspan="3">Error fetching</td></tr>';
+                });
+        }
+
+        loadQuarantine();
+        setInterval(loadQuarantine, 5000);
+    </script>
+</body>
+</html>
