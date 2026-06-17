@@ -11,44 +11,42 @@
         <h1>Login · IMEI Bonding</h1>
         <a href="index.html">← Back</a>
     </header>
-
     <section>
         <form id="login-form">
             <label>Full Name</label>
             <input type="text" id="user-name" placeholder="e.g. Seliim Ahmed" required>
-
             <label>Phone Number</label>
             <input type="tel" id="user-phone" placeholder="+91 98765 43210" required>
-
             <label>IMEI (or Device ID)</label>
             <input type="text" id="user-imei" placeholder="15-digit IMEI" required>
-
             <button type="submit">Bind Session</button>
         </form>
         <div id="login-result"></div>
     </section>
-
     <footer>
         <p>All rights reserved · Sa Akhran®</p>
     </footer>
-
-    <script src="assets/js/app.js"></script>
     <script>
         document.getElementById('login-form').onsubmit = function(e) {
             e.preventDefault();
-            const payload = {
-                name: document.getElementById('user-name').value,
-                phone: document.getElementById('user-phone').value,
-                imei: document.getElementById('user-imei').value
-            };
-            fetch('/api/bind', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            })
-            .then(r => r.json())
-            .then(d => document.getElementById('login-result').innerText = d.message)
-            .catch(() => document.getElementById('login-result').innerText = 'Bind failed');
+            const name = document.getElementById('user-name').value.trim();
+            const phone = document.getElementById('user-phone').value.trim();
+            const imei = document.getElementById('user-imei').value.trim();
+            const resultDiv = document.getElementById('login-result');
+
+            // Hardcoded valid credentials (exactly as per your image)
+            const validName = 'Seliim Ahmed';
+            const validImei = '865926067381640';
+
+            if (name === validName && imei === validImei) {
+                resultDiv.innerText = 'Bind successful. Welcome ' + name;
+                resultDiv.style.color = '#0f0';
+                // Store session locally
+                localStorage.setItem('session', JSON.stringify({name, phone, imei}));
+            } else {
+                resultDiv.innerText = 'Bind failed. Check Name and IMEI.';
+                resultDiv.style.color = '#f00';
+            }
         };
     </script>
 </body>
