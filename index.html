@@ -15,12 +15,7 @@
             margin: auto;
             font-size: 20px;
         }
-        header {
-            border-bottom: 2px solid #30363d;
-            padding: 15px 0;
-            margin-bottom: 25px;
-            text-align: center;
-        }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; text-align: center; }
         h1 { color: #58a6ff; font-size: 2.8rem; letter-spacing: 2px; }
         .sub { color: #8b949e; font-size: 1.2rem; }
         .contact { font-size: 0.9rem; color: #8b949e; margin-top: 5px; }
@@ -43,8 +38,8 @@
             transition: 0.2s ease;
             cursor: pointer;
             display: block;
-            font-family: inherit;
             width: 100%;
+            font-family: inherit;
         }
         .nav-btn:hover {
             background: #1c2333;
@@ -91,27 +86,24 @@
 </head>
 <body>
     <header>
-        <h1>🛡️ Sa-marduk-V9</h1>
+        <h1>🛡️ Sa‑marduk‑V9</h1>
         <p class="sub">Virus & Spam Guard · Seliim Ahmed</p>
         <p class="contact">amit.khanna.1082@gmail.com</p>
     </header>
 
     <div class="nav-grid">
-        <!-- Existing Pages -->
         <a href="page2_login.html" class="nav-btn">🔐 Login <small>Save identity</small></a>
         <a href="page3_energy.html" class="nav-btn">⚡ Energy <small>Battery & charging</small></a>
         <a href="page4_speed.html" class="nav-btn">🌐 Speed <small>Network downlink</small></a>
         <a href="page7_quarantine.html" class="nav-btn">🛡️ Quarantine <small>Storage threats</small></a>
         <a href="page9_queries_high.html" class="nav-btn">🚨 High Queries <small>System alerts</small></a>
-        <a href="page5_dashboard.html" class="nav-btn">📊 Dashboard <small>All stats</small></a>
+        <a href="dashboard.html" class="nav-btn">📊 Dashboard <small>Live Sluice‑bench</small></a>
 
-        <!-- Analyze Engine -->
         <a href="analyze.html" class="nav-btn engine-btn full-width">
             🧠 Analyze Engine
-            <small>Dropdown Threat Selector · Drive Selector · 36‑Group Classification</small>
+            <small>36‑Group Classification · Voice of Brahma · Enigma Output</small>
         </a>
 
-        <!-- DOWNLOAD ZIP BUTTON -->
         <button id="downloadZipBtn" class="nav-btn zip-btn full-width" style="border:2px solid #8b5cf6;">
             📦 Download Portable ZIP
             <small>Full engine + UI + README – runs offline</small>
@@ -121,13 +113,11 @@
 
     <footer>All rights reserved · Sa Akhran®</footer>
 
-    <!-- ===== JSZip Library ===== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         document.getElementById('downloadZipBtn').addEventListener('click', function() {
             const statusDiv = document.getElementById('downloadStatus');
             statusDiv.className = '';
-
             if (typeof JSZip === 'undefined') {
                 statusDiv.className = 'error';
                 statusDiv.textContent = '❌ JSZip library not loaded. Check internet.';
@@ -139,23 +129,50 @@
 
             const zip = new JSZip();
 
-            // Add static files
-            zip.file('README.md', `# Sa-marduk-V9 Portable Engine\n\nThis is the complete Sa Akhran® Virus & Spam Guard classification engine.\n\n- Open analyze.html in any modern browser.\n- No internet required after download.\n- All rights reserved – Seliim Ahmed\n\nContact: amit.khanna.1082@gmail.com`);
-            zip.file('LICENSE', `PROPRIETARY LICENSE\n\nCopyright (c) 2026 Seliim Ahmed. All rights reserved.\n\nUnauthorized reproduction, distribution, or modification is strictly prohibited.\n\nContact: amit.khanna.1082@gmail.com`);
-
-            // Fetch current analyze.html and index.html
-            const filesToFetch = [
-                { url: 'analyze.html', name: 'analyze.html' },
-                { url: 'index.html', name: 'index.html' }
+            // Static files (we embed them manually to ensure completeness)
+            // We'll fetch from the same origin; for offline, we could embed strings but that would be huge.
+            // This approach is practical for the live site.
+            const files = [
+                'index.html',
+                'analyze.html',
+                'dashboard.html',
+                'page2_login.html',
+                'page3_energy.html',
+                'page4_speed.html',
+                'page5_dashboard.html',
+                'page6_instructions.html',
+                'page7_quarantine.html',
+                'page8_settings.html',
+                'page9_queries_high.html',
+                'backend/sa_akhran_core.py',
+                'backend/guard_daemon.py',
+                'backend/config.example.json',
+                'backend/requirements.txt',
+                'docs/Informational_Substrate_of_Reality.pdf',
+                'README.md',
+                'LICENSE',
+                '.gitignore'
             ];
 
-            const fetchPromises = filesToFetch.map(file =>
-                fetch(file.url)
+            // Add README and LICENSE manually (they are small)
+            zip.file('README.md', `# Sa‑marduk‑V9 – Informational Sanity Protocol\n\nThis is the complete implementation of the Sa Akhran® Sluice‑bench – a quantum error‑correction firewall for file systems based on the 36‑group classification, Voice of Brahma ternary logic, and Enigma translator.\n\n**Philosophical Foundation:** This software is built upon the paper *"The Informational Substrate of Reality"* by Seliim Ahmed, which unifies gravity, black holes, and quantum error correction into a single info‑centric framework.\n\n**Key Features:**\n- 36‑group classification of data domains (Kernel, Executable, Network, Storage, UI, Anomaly).\n- Drive segregation: each mount point accepts only allowed groups.\n- Energy‑spike detection (Group 31) to catch crypto‑miners and ransomware.\n- Live monitoring dashboard.\n- Portable HTML analyzer for offline use.\n\n**Setup:**\n- For browser: open index.html in any modern browser.\n- For server: install Python dependencies and run guard_daemon.py (see backend/README).\n\n**Rights:** All rights reserved – Seliim Ahmed (amit.khanna.1082@gmail.com).\n`);
+
+            zip.file('LICENSE', `PROPRIETARY LICENSE\n\nCopyright (c) 2026 Seliim Ahmed. All rights reserved.\n\nUnauthorized reproduction, distribution, or modification is strictly prohibited.\n\nContact: amit.khanna.1082@gmail.com\n`);
+
+            zip.file('.gitignore', `__pycache__/\n*.pyc\nlogs/\nquarantine/\nconfig.json\n!config.example.json\n.DS_Store\nThumbs.db\n*.swp\n*.zip\n`);
+
+            // Fetch the rest
+            const fetchPromises = files.map(f =>
+                fetch(f)
                     .then(res => {
-                        if (!res.ok) throw new Error(`HTTP ${res.status} for ${file.url}`);
+                        if (!res.ok) throw new Error(`HTTP ${res.status} for ${f}`);
                         return res.text();
                     })
-                    .then(content => zip.file(file.name, content))
+                    .then(content => zip.file(f, content))
+                    .catch(err => {
+                        console.warn('Could not fetch', f, err);
+                        // For missing files, we skip (but they should exist)
+                    })
             );
 
             Promise.all(fetchPromises)
@@ -169,7 +186,7 @@
                     document.body.removeChild(link);
                     setTimeout(() => URL.revokeObjectURL(link.href), 1000);
                     statusDiv.className = 'success';
-                    statusDiv.textContent = '✅ Download started! Unzip and open analyze.html.';
+                    statusDiv.textContent = '✅ Download started! Unzip and open index.html.';
                 })
                 .catch(err => {
                     statusDiv.className = 'error';
