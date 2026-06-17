@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa Akhran® Engine · Analyze</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            font-size: 18px;
+        }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        h1 { color: #58a6ff; font-size: 2.2rem; }
+        .back-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+        .card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        input, button {
+            font-size: 1.2rem;
+            padding: 12px;
+            width: 100%;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 2px solid #30363d;
+            background: #0d1117;
+            color: #c9d1d9;
+        }
+        button {
+            background: #238636;
+            color: #fff;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { background: #2ea44f; }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0d1117;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            overflow-x: auto;
+        }
+        footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔍 Sa Akhran® Analysis Engine</h1>
+        <a href="index.html" class="back-btn">← Back to Home</a>
+    </header>
+
+    <div class="card">
+        <h2>Enter a system query to classify</h2>
+        <p style="color:#8b949e; font-size:0.9rem;">Examples: "Check USB drive for virus", "Analyze network packet", "Memory usage of process 4432"</p>
+        <input type="text" id="queryInput" placeholder="Type your query here...">
+        <button id="analyzeBtn">▶ Run Classification</button>
+    </div>
+
+    <div class="card" id="resultContainer">
+        <h3>Classification Result</h3>
+        <div id="result">Awaiting query...</div>
+    </div>
+
+    <footer>All rights reserved · Sa Akhran® · Seliim Ahmed</footer>
+
+    <script>
+        // ============================================================
+        // INSERT THE FULL ENGINE CODE HERE (copy from the previous response)
+        // ============================================================
+        // (Paste the entire engine code from the "sa_akhran_engine.js" block 
+        //  between these comments)
+        // ============================================================
+        // For brevity, I'll assume you paste it here.
+        // If you prefer, you can save the engine as a separate .js file and 
+        // include it with <script src="engine.js"></script>.
+        // ============================================================
+
+        // (I'll include the engine inline here in the final answer for completeness)
+        // (But in the actual file, you can either paste it or link to external)
+
+        // ============================================================
+        // PASTE ENGINE CODE BELOW (starting from "const GROUPS = {...")
+        // ============================================================
+
+        const GROUPS = {
+            1: { name: 'Boot Loader', domain: 'kernel', trait: 'Root-Trust Only' },
+            2: { name: 'Kernel Core', domain: 'kernel', trait: 'Root-Trust Only' },
+            3: { name: 'Device Drivers', domain: 'kernel', trait: 'Root-Trust Only' },
+            4: { name: 'System Registry', domain: 'kernel', trait: 'Root-Trust Only' },
+            5: { name: 'BIOS/UEFI', domain: 'kernel', trait: 'Root-Trust Only' },
+            6: { name: 'Boot Configuration', domain: 'kernel', trait: 'Root-Trust Only' },
+            7: { name: 'Portable Executables', domain: 'executable', trait: 'Hash-Anchored' },
+            8: { name: 'Dynamic Libraries', domain: 'executable', trait: 'Hash-Anchored' },
+            9: { name: 'Scripts (JS/Python)', domain: 'executable', trait: 'Hash-Anchored' },
+            10: { name: 'Macros', domain: 'executable', trait: 'Hash-Anchored' },
+            11: { name: 'APK/IPA', domain: 'executable', trait: 'Hash-Anchored' },
+            12: { name: 'Firmware Updates', domain: 'executable', trait: 'Hash-Anchored' },
+            13: { name: 'Inbound TCP', domain: 'network', trait: 'Temporal-Flow' },
+            14: { name: 'Outbound TCP', domain: 'network', trait: 'Temporal-Flow' },
+            15: { name: 'Inbound UDP', domain: 'network', trait: 'Temporal-Flow' },
+            16: { name: 'Outbound UDP', domain: 'network', trait: 'Temporal-Flow' },
+            17: { name: 'ICMP/Ping', domain: 'network', trait: 'Temporal-Flow' },
+            18: { name: 'DNS Queries', domain: 'network', trait: 'Temporal-Flow' },
+            19: { name: 'Keyboard Input', domain: 'ui', trait: 'Context-Aware' },
+            20: { name: 'Mouse/Touch', domain: 'ui', trait: 'Context-Aware' },
+            21: { name: 'Voice Commands', domain: 'ui', trait: 'Context-Aware' },
+            22: { name: 'Camera Feed', domain: 'ui', trait: 'Context-Aware' },
+            23: { name: 'Clipboard Data', domain: 'ui', trait: 'Context-Aware' },
+            24: { name: 'Form Submissions', domain: 'ui', trait: 'Context-Aware' },
+            25: { name: 'Internal Flash', domain: 'storage', trait: 'Spatial-Mapping' },
+            26: { name: 'External SD Card', domain: 'storage', trait: 'Spatial-Mapping' },
+            27: { name: 'USB Drives', domain: 'storage', trait: 'Spatial-Mapping' },
+            28: { name: 'Cloud Volumes', domain: 'storage', trait: 'Spatial-Mapping' },
+            29: { name: 'Temp Cache', domain: 'storage', trait: 'Spatial-Mapping' },
+            30: { name: 'Swap/Pagefile', domain: 'storage', trait: 'Spatial-Mapping' },
+            31: { name: 'Unusual CPU Spikes', domain: 'anomaly', trait: 'Bayesian-Predictive' },
+            32: { name: 'Memory Leaks', domain: 'anomaly', trait: 'Bayesian-Predictive' },
+            33: { name: 'I/O Bottlenecks', domain: 'anomaly', trait: 'Bayesian-Predictive' },
+            34: { name: 'Permission Escalation', domain: 'anomaly', trait: 'Bayesian-Predictive' },
+            35: { name: 'Encrypted Ransomware', domain: 'anomaly', trait: 'Bayesian-Predictive' },
+            36: { name: 'Unknown Outbound Calls', domain: 'anomaly', trait: 'Bayesian-Predictive' }
+        };
+
+        function isRelevantQuery(input) {
+            const keywords = ['file', 'process', 'network', 'packet', 'kernel', 'memory', 
+                              'storage', 'disk', 'usb', 'boot', 'execute', 'script', 'malware',
+                              'virus', 'spam', 'permission', 'encrypt', 'connection', 'socket',
+                              'port', 'registry', 'cache', 'heap', 'stack', 'cpu', 'gpu', 'ram'];
+            const lower = input.toLowerCase();
+            return keywords.some(kw => lower.includes(kw));
+        }
+
+        function classifyQuery(input) {
+            const lower = input.toLowerCase();
+            let matchedGroups = [];
+            for (let id in GROUPS) {
+                const group = GROUPS[id];
+                if (lower.includes(group.domain) || lower.includes(group.name.toLowerCase()) || 
+                    lower.includes(group.trait.toLowerCase().split(' ')[0].toLowerCase())) {
+                    matchedGroups.push({ id: parseInt(id), ...group });
+                }
+            }
+            if (matchedGroups.length === 0) matchedGroups.push({ id: 25, ...GROUPS[25] });
+            return matchedGroups;
+        }
+
+        function voiceOfBrahma(query, group) {
+            let score = 0;
+            const lower = query.toLowerCase();
+            const malwareWords = ['virus', 'malware', 'trojan', 'ransom', 'spam', 'phish', 
+                                  'exploit', 'inject', 'buffer overflow', 'backdoor', 'keylog'];
+            const safeWords = ['trusted', 'signature', 'verified', 'official', 'update', 
+                               'security', 'patch', 'backup'];
+            let malScore = malwareWords.filter(w => lower.includes(w)).length;
+            let safeScore = safeWords.filter(w => lower.includes(w)).length;
+            if (group.trait === 'Root-Trust Only' || group.trait === 'Hash-Anchored') safeScore += 2;
+            if (group.trait === 'Bayesian-Predictive') malScore += 1;
+            if (malScore > safeScore) return -1;
+            if (safeScore > malScore) return 1;
+            return 0;
+        }
+
+        function enigmaTranslator(query, groups, ternaries) {
+            if (!isRelevantQuery(query)) {
+                return { output: 'VOID: Irrelevant query.', html: '<p style="color:#f85149;">VOID: Query discarded.</p>' };
+            }
+            let overallStatus = 0;
+            let details = '';
+            groups.forEach((group, index) => {
+                const state = ternaries[index];
+                overallStatus += state;
+                const statusText = state === 1 ? '✅ SAFE' : (state === -1 ? '❌ MALICIOUS' : '⚪ NEUTRAL');
+                const color = state === 1 ? '#3fb950' : (state === -1 ? '#f85149' : '#d29922');
+                details += `<tr>
+                    <td>${group.id}</td>
+                    <td>${group.name}</td>
+                    <td>${group.trait}</td>
+                    <td><strong style="color:${color}">${statusText}</strong></td>
+                </tr>`;
+            });
+            const finalVerdict = overallStatus > 0 ? '✅ OVERALL: SAFE' :
+                                 overallStatus < 0 ? '🚨 OVERALL: MALICIOUS' :
+                                 '⚠️ OVERALL: NEUTRAL';
+            const html = `
+            <div style="font-family:monospace; background:#0d1117; color:#c9d1d9; padding:15px; border-radius:6px;">
+                <h3 style="color:#58a6ff;">Analysis Report</h3>
+                <p><strong>Query:</strong> "${query}"</p>
+                <hr style="border-color:#30363d;">
+                <h4>36-Group Classification</h4>
+                <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                    <thead><tr style="border-bottom:2px solid #30363d;">
+                        <th>#</th><th>Name</th><th>Trait</th><th>Verdict</th>
+                    </tr></thead>
+                    <tbody>${details}</tbody>
+                </table>
+                <hr style="border-color:#30363d;">
+                <h2 style="color:${overallStatus>0?'#3fb950':overallStatus<0?'#f85149':'#d29922'};">${finalVerdict}</h2>
+                <p style="color:#8b949e; font-size:12px;">All rights reserved · Seliim Ahmed</p>
+            </div>
+            `;
+            return { output: finalVerdict, html };
+        }
+
+        function processQuery(inputQuery) {
+            if (!isRelevantQuery(inputQuery)) {
+                return { 
+                    status: 'NOISE_REJECTED', 
+                    message: 'Discarded: Irrelevant query.',
+                    html: '<p style="color:#f85149;">VOID: Not a system query.</p>'
+                };
+            }
+            const matchedGroups = classifyQuery(inputQuery);
+            const ternaries = matchedGroups.map(g => voiceOfBrahma(inputQuery, g));
+            const result = enigmaTranslator(inputQuery, matchedGroups, ternaries);
+            return { status: 'PROCESSED', query: inputQuery, groups: matchedGroups, ternaryStates: ternaries, verdict: result.output, html: result.html };
+        }
+
+        // ============================================================
+        // UI BINDING
+        // ============================================================
+        document.getElementById('analyzeBtn').addEventListener('click', function() {
+            const input = document.getElementById('queryInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            if (!input) {
+                resultDiv.innerHTML = '<p style="color:#f85149;">Please enter a query.</p>';
+                return;
+            }
+            const output = processQuery(input);
+            if (output.status === 'NOISE_REJECTED') {
+                resultDiv.innerHTML = output.html;
+            } else {
+                resultDiv.innerHTML = output.html;
+            }
+        });
+    </script>
+</body>
+</html>
