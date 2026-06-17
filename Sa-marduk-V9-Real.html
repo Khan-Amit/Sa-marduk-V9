@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sa-marduk-V9 · Real Device Data</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;padding:15px;max-width:700px;margin:auto}
+header,footer{border-bottom:1px solid #30363d;padding:10px 0;margin-bottom:15px}
+footer{border-top:1px solid #30363d;border-bottom:none;margin-top:30px;text-align:center;font-size:0.8em;color:#8b949e}
+h1{color:#58a6ff}
+a{color:#58a6ff;cursor:pointer}
+a:hover{text-decoration:underline}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+nav a{background:#161b22;padding:6px 12px;border-radius:4px;border:1px solid #30363d;font-size:14px}
+section{background:#161b22;padding:20px;border-radius:8px;border:1px solid #30363d;margin-bottom:15px}
+.hidden{display:none}
+.dial-container{display:flex;flex-direction:column;align-items:center}
+canvas{background:#0d1117;border-radius:50%}
+#energy-digital{font-size:2.2em;color:#3fb950;margin:10px 0}
+#speed-display{font-size:2.2em;color:#3fb950;text-align:center}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border-bottom:1px solid #30363d;padding:8px 5px;text-align:left}
+th{color:#58a6ff}
+.alert{background:#0d1117;padding:10px;margin:5px 0;border-left:4px solid #f85149;border-radius:4px}
+.badge{background:#238636;padding:2px 8px;border-radius:12px;font-size:12px;color:#fff}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📱 Sa-marduk-V9 · Real Data</h1>
+  <p>Virus & Spam Guard · Seliim Ahmed</p>
+  <nav>
+    <a onclick="showPage('login')">Login</a>
+    <a onclick="showPage('energy')">Energy</a>
+    <a onclick="showPage('speed')">Speed</a>
+    <a onclick="showPage('quarantine')">Quarantine</a>
+    <a onclick="showPage('queries')">High Queries</a>
+    <a onclick="showPage('dashboard')">Dashboard</a>
+  </nav>
+</header>
+
+<!-- PAGE: LOGIN -->
+<section id="page-login" class="page">
+  <h2>🔐 Login (Save to Database)</h2>
+  <form id="loginForm">
+    <input type="text" id="userName" placeholder="Full Name" required style="width:100%;padding:10px;background:#0d1117;border:1px solid #30363d;color:#fff;border-radius:4px;margin:5px 0;">
+    <input type="tel" id="userPhone" placeholder="Phone Number" required style="width:100%;padding:10px;background:#0d1117;border:1px solid #30363d;color:#fff;border-radius:4px;margin:5px 0;">
+    <button type="submit" style="width:100%;padding:12px;background:#238636;color:#fff;border:none;border-radius:4px;font-weight:bold;cursor:pointer;">Save Login</button>
+  </form>
+  <div id="loginMsg" style="margin-top:10px;font-weight:bold;"></div>
+  <hr style="border-color:#30363d;margin:15px 0;">
+  <h3>Traffic Log</h3>
+  <div id="trafficList"></div>
+</section>
+
+<!-- PAGE: ENERGY (Real Battery) -->
+<section id="page-energy" class="page hidden">
+  <h2>⚡ Energy (Battery)</h2>
+  <div class="dial-container">
+    <canvas id="energy-dial" width="200" height="200"></canvas>
+    <div id="energy-digital">-- %</div>
+    <p style="color:#8b949e;font-size:14px;">Charging: <span id="chargingStatus">--</span></p>
+  </div>
+</section>
+
+<!-- PAGE: SPEED (Real Network) -->
+<section id="page-speed" class="page hidden">
+  <h2>🌐 Network Speed</h2>
+  <div id="speed-display">-- Mbps</div>
+  <p style="color:#8b949e;font-size:14px;">Downlink speed (estimated)</p>
+</section>
+
+<!-- PAGE: QUARANTINE (Simulated based on storage) -->
+<section id="page-quarantine" class="page hidden">
+  <h2>🛡️ Quarantine</h2>
+  <div id="quarantineBody">Checking storage usage...</div>
+</section>
+
+<!-- PAGE: HIGH QUERIES (Real alerts) -->
+<section id="page-queries" class="page hidden">
+  <h2>🚨 High Priority Alerts</h2>
+  <div id="alertsContainer">No alerts yet.</div>
+</section>
+
+<!-- PAGE: DASHBOARD -->
+<section id="page-dashboard" class="page hidden">
+  <h2>📊 Dashboard</h2>
+  <div id="dashStats"></div>
+</section>
+
+<footer>All rights reserved · Sa Akhran®</footer>
+
+<script>
+// ============================================
+// 1. DATABASE (IndexedDB – real, persistent)
+// ============================================
+let db = null;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('SaMardukDB', 1);
+    request.onupgradeneeded = (ev) => {
+      const db = ev.target.result;
+      if (!db.objectStoreNames.contains('login')) {
+        db.createObjectStore('login', { autoIncrement: true });
+      }
+      if (!db.objectStoreNames.contains('sensors')) {
+        const store = db.createObjectStore('sensors', { autoIncrement: true });
+        store.createIndex('type', 'type', { unique: false });
+      }
+    };
+    request.onsuccess = (ev) => { db = ev.target.result; resolve(db); };
+    request.onerror = (ev) => reject(ev.target.error);
+  });
+}
+
+function addLogin(name, phone) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('login', 'readwrite');
+    const store = tx.objectStore('login');
+    store.add({ name, phone, timestamp: new Date().toISOString() });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject();
+  });
+}
+
+function getLogins() {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('login', 'readonly');
+    const store = tx.objectStore('login');
+    const all = store.getAll();
+    all.onsuccess = () => resolve(all.result);
+    all.onerror = () => reject();
+  });
+}
+
+function addSensorReading(type, value) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('sensors', 'readwrite');
+    const store = tx.objectStore('sensors');
+    store.add({ type, value, timestamp: new Date().toISOString() });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject();
+  });
+}
+
+function getSensorReadings(type, limit = 20) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('sensors', 'readonly');
+    const store = tx.objectStore('sensors');
+    const index = store.index('type');
+    const range = IDBKeyRange.only(type);
+    const all = index.getAll(range);
+    all.onsuccess = () => resolve(all.result.slice(-limit));
+    all.onerror = () => reject();
+  });
+}
+
+// ============================================
+// 2. PAGE NAVIGATION
+// ============================================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page-'+id).classList.remove('hidden');
+}
+showPage('login');
+
+// ============================================
+// 3. LOGIN & TRAFFIC
+// ============================================
+document.getElementById('loginForm').onsubmit = async function(e) {
+  e.preventDefault();
+  const name = document.getElementById('userName').value.trim();
+  const phone = document.getElementById('userPhone').value.trim();
+  const msg = document.getElementById('loginMsg');
+  if (!name || !phone) {
+    msg.textContent = '❌ Please fill both fields.';
+    msg.style.color = '#f85149';
+    return;
+  }
+  try {
+    await addLogin(name, phone);
+    msg.textContent = '✅ Login saved!';
+    msg.style.color = '#3fb950';
+    document.getElementById('userName').value = '';
+    document.getElementById('userPhone').value = '';
+    renderTraffic();
+  } catch(e) {
+    msg.textContent = '❌ Database error.';
+    msg.style.color = '#f85149';
+  }
+};
+
+async function renderTraffic() {
+  const list = document.getElementById('trafficList');
+  try {
+    const entries = await getLogins();
+    if (entries.length === 0) {
+      list.innerHTML = '<p style="color:#8b949e;">No logins yet.</p>';
+      return;
+    }
+    let html = '<ul style="list-style:none;padding:0;">';
+    // Show latest first
+    const reversed = entries.reverse();
+    reversed.slice(0, 20).forEach(entry => {
+      const time = new Date(entry.timestamp).toLocaleString();
+      html += `<li style="padding:6px 0;border-bottom:1px solid #30363d;font-size:14px;">${entry.name} (${entry.phone}) – ${time}</li>`;
+    });
+    if (entries.length > 20) html += `<li style="color:#8b949e;font-size:12px;">+ ${entries.length - 20} more</li>`;
+    html += '</ul>';
+    list.innerHTML = html;
+  } catch(e) {
+    list.innerHTML = '<p style="color:#f85149;">Error loading traffic.</p>';
+  }
+}
+
+// ============================================
+// 4. REAL SENSOR READERS (Browser APIs)
+// ============================================
+
+// Energy: Battery
+async function readBattery() {
+  try {
+    const battery = await navigator.getBattery();
+    const level = Math.round(battery.level * 100);
+    const charging = battery.charging ? 'Yes' : 'No';
+    // Estimate power (rough: if discharging, approximate)
+    let power = level; // just percentage for display
+    document.getElementById('energy-digital').innerText = level + '%';
+    document.getElementById('chargingStatus').innerText = charging;
+    // Draw dial
+    drawDial(level);
+    // Store in DB
+    await addSensorReading('battery_level', level);
+    return { level, charging };
+  } catch(e) {
+    document.getElementById('energy-digital').innerText = 'N/A';
+    return null;
+  }
+}
+
+function drawDial(val) {
+  const canvas = document.getElementById('energy-dial');
+  const ctx = canvas.getContext('2d');
+  const p = Math.min(val/100, 1);
+  const angle = p * 2 * Math.PI - Math.PI/2;
+  ctx.clearRect(0,0,200,200);
+  ctx.beginPath();
+  ctx.arc(100,100,80,0,2*Math.PI);
+  ctx.strokeStyle='#30363d';
+  ctx.lineWidth=12;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(100,100,80,-Math.PI/2,angle);
+  ctx.strokeStyle='#3fb950';
+  ctx.lineWidth=12;
+  ctx.stroke();
+  ctx.fillStyle='#c9d1d9';
+  ctx.font='20px monospace';
+  ctx.fillText(val+'%', 80, 110);
+}
+
+// Speed: Network Information API
+async function readSpeed() {
+  if (navigator.connection) {
+    const downlink = navigator.connection.downlink; // Mbps
+    document.getElementById('speed-display').innerText = downlink.toFixed(1) + ' Mbps';
+    await addSensorReading('network_speed', downlink);
+  } else {
+    document.getElementById('speed-display').innerText = 'Not supported';
+  }
+}
+
+// Quarantine: Simulate based on storage usage (real)
+async function checkQuarantine() {
+  // Use Storage API to get usage
+  if (navigator.storage && navigator.storage.estimate) {
+    const estimate = await navigator.storage.estimate();
+    const used = estimate.usage / estimate.quota * 100;
+    document.getElementById('quarantineBody').innerHTML = `
+      <p>Storage used: ${Math.round(used)}%</p>
+      <p style="color:#8b949e;font-size:14px;">If usage > 80%, "quarantine" may trigger.</p>
+    `;
+    await addSensorReading('storage_usage', used);
+    // If high usage, simulate quarantine items
+    if (used > 80) {
+      document.getElementById('quarantineBody').innerHTML += `
+        <hr style="border-color:#30363d;">
+        <table><tr><th>File</th><th>Risk</th><th>Action</th></tr>
+        <tr><td>storage_overflow.tmp</td><td style="color:#f85149;">4</td><td>Quarantined</td></tr>
+        <tr><td>cache_large.bin</td><td style="color:#d29922;">3</td><td>Quarantined</td></tr>
+        </table>
+      `;
+    } else {
+      document.getElementById('quarantineBody').innerHTML += `<p style="color:#3fb950;">✅ No critical storage threats.</p>`;
+    }
+  } else {
+    document.getElementById('quarantineBody').innerHTML = '<p style="color:#8b949e;">Storage API not available.</p>';
+  }
+}
+
+// High Queries: Real alerts from battery low, network slow, storage high
+async function checkAlerts() {
+  const alerts = [];
+  try {
+    const battery = await navigator.getBattery();
+    if (battery.level < 0.2) alerts.push('⚠️ Battery level below 20% – critical');
+    if (!battery.charging) alerts.push('🔌 Device not charging – energy saving mode?');
+  } catch(e) {}
+  
+  if (navigator.connection) {
+    if (navigator.connection.downlink < 1) alerts.push('📶 Very slow network (<1 Mbps)');
+    if (navigator.connection.rtt > 300) alerts.push('⏱️ High latency (>300ms)');
+  }
+  
+  const container = document.getElementById('alertsContainer');
+  if (alerts.length === 0) {
+    container.innerHTML = '<p style="color:#3fb950;">✅ All systems normal.</p>';
+  } else {
+    container.innerHTML = alerts.map(a => `<div class="alert">${a}</div>`).join('');
+  }
+}
+
+// ============================================
+// 5. DASHBOARD – show all stats
+// ============================================
+async function renderDashboard() {
+  const stats = document.getElementById('dashStats');
+  let html = '';
+  // Get latest readings
+  try {
+    const batt = await getSensorReadings('battery_level', 1);
+    const net = await getSensorReadings('network_speed', 1);
+    const storage = await getSensorReadings('storage_usage', 1);
+    const logins = await getLogins();
+    
+    html += `<div class="stat"><span>Battery:</span><span>${batt.length ? batt[0].value + '%' : 'N/A'}</span></div>`;
+    html += `<div class="stat"><span>Network Speed:</span><span>${net.length ? net[0].value.toFixed(1) + ' Mbps' : 'N/A'}</span></div>`;
+    html += `<div class="stat"><span>Storage Used:</span><span>${storage.length ? Math.round(storage[0].value) + '%' : 'N/A'}</span></div>`;
+    html += `<div class="stat"><span>Total Logins:</span><span>${logins.length}</span></div>`;
+    stats.innerHTML = html;
+  } catch(e) {
+    stats.innerHTML = '<p style="color:#f85149;">Error loading dashboard.</p>';
+  }
+}
+
+// ============================================
+// 6. INIT: Open DB and start polling
+// ============================================
+openDB().then(() => {
+  renderTraffic();
+  // Poll every 2 seconds
+  setInterval(async () => {
+    await readBattery();
+    await readSpeed();
+    await checkQuarantine();
+    await checkAlerts();
+  }, 2000);
+  // Dashboard update every 5s
+  setInterval(renderDashboard, 5000);
+  // Initial reads
+  readBattery();
+  readSpeed();
+  checkQuarantine();
+  checkAlerts();
+  renderDashboard();
+}).catch(err => {
+  alert('IndexedDB initialization failed. Some features may not work.');
+});
+</script>
+</body>
+</html>
