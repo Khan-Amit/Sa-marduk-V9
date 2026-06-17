@@ -4,42 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sa-marduk-V9 · Speed</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            font-size: 20px;
+        }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        h1 { color: #58a6ff; font-size: 2.2rem; }
+        .back-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+        .card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 40px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        #speed-display {
+            font-size: 4rem;
+            color: #3fb950;
+            margin: 10px 0;
+        }
+        .unit {
+            font-size: 1.8rem;
+            color: #8b949e;
+        }
+        footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Data Handling Speed</h1>
-        <a href="index.html">← Back</a>
+        <h1>🌐 Network Speed</h1>
+        <a href="index.html" class="back-btn">← Back to Home</a>
     </header>
 
-    <section>
-        <div id="speed-display">
-            <span id="speed-value">0.00</span> <span id="speed-unit">MB/s</span>
-        </div>
-        <p>Live from network / disk I/O</p>
-    </section>
+    <div class="card">
+        <div id="speed-display">--</div>
+        <div class="unit">Mbps (downlink)</div>
+    </div>
 
-    <footer>
-        <p>All rights reserved · Sa Akhran®</p>
-    </footer>
+    <footer>All rights reserved · Sa Akhran®</footer>
 
-    <script src="assets/js/app.js"></script>
     <script>
-        const speedVal = document.getElementById('speed-value');
-        const speedUnit = document.getElementById('speed-unit');
-
         function updateSpeed() {
-            fetch('/api/speed_rate')
-                .then(r => r.json())
-                .then(data => {
-                    speedVal.innerText = data.mbps ? (data.mbps / 8).toFixed(2) : data.mb_s.toFixed(2);
-                    speedUnit.innerText = 'MB/s';
-                })
-                .catch(() => speedVal.innerText = '--');
+            if (navigator.connection) {
+                const speed = navigator.connection.downlink;
+                document.getElementById('speed-display').innerText = speed.toFixed(1);
+                // Save to localStorage
+                const sensorData = JSON.parse(localStorage.getItem('sa_sensors') || '[]');
+                sensorData.push({ type: 'speed', value: speed, timestamp: new Date().toISOString() });
+                if (sensorData.length > 100) sensorData.shift();
+                localStorage.setItem('sa_sensors', JSON.stringify(sensorData));
+            } else {
+                document.getElementById('speed-display').innerText = 'N/A';
+            }
         }
-
-        setInterval(updateSpeed, 600);
         updateSpeed();
+        setInterval(updateSpeed, 3000);
     </script>
 </body>
 </html>
