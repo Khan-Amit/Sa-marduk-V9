@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sa‑marduk‑V9 · Dashboard</title>
+    <title>Sa-marduk-V9 · Dashboard</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
@@ -15,9 +15,25 @@
             margin: auto;
             font-size: 18px;
         }
-        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        header {
+            border-bottom: 2px solid #30363d;
+            padding: 15px 0;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
         h1 { color: #58a6ff; font-size: 2.2rem; }
-        .back-btn { background: #161b22; border: 2px solid #30363d; padding: 8px 18px; border-radius: 8px; color: #c9d1d9; text-decoration: none; }
+        .back-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 8px 18px;
+            border-radius: 8px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1rem;
+        }
         .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
         .card {
             background: #161b22;
@@ -38,10 +54,61 @@
         .pass { color: #3fb950; }
         .reject { color: #f85149; }
         .neutral { color: #d29922; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
-        th, td { border-bottom: 1px solid #30363d; padding: 8px 5px; text-align: left; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        th, td {
+            border-bottom: 1px solid #30363d;
+            padding: 8px 5px;
+            text-align: left;
+        }
         th { color: #58a6ff; }
-        .footer { margin-top: 40px; border-top: 2px solid #30363d; padding: 15px 0; text-align: center; font-size: 0.9rem; color: #8b949e; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .badge-green { background: #1a3a1a; color: #3fb950; }
+        .badge-red { background: #3a1a1a; color: #f85149; }
+        .badge-yellow { background: #3a3a1a; color: #d29922; }
+        .footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+        .shortcuts {
+            font-size: 12px;
+            color: #8b949e;
+            border-top: 1px solid #30363d;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        .shortcuts kbd {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .clear-btn {
+            background: #da3633;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .clear-btn:hover { background: #f85149; }
     </style>
 </head>
 <body>
@@ -53,11 +120,11 @@
     <div class="card">
         <h2>Live Status</h2>
         <div id="liveStats">
-            <div class="stat-row"><span class="stat-label">🔵 System Time:</span><span class="stat-value" id="sysTime">--</span></div>
-            <div class="stat-row"><span class="stat-label">🟢 Total Drives Monitored:</span><span class="stat-value" id="driveCount">--</span></div>
-            <div class="stat-row"><span class="stat-label">🔴 Files Rejected (Last Hour):</span><span class="stat-value reject" id="rejectCount">--</span></div>
-            <div class="stat-row"><span class="stat-label">🟡 Quarantine Size:</span><span class="stat-value neutral" id="quarantineSize">--</span></div>
-            <div class="stat-row"><span class="stat-label">⚡ Energy Spike Detected:</span><span class="stat-value" id="energySpike">⛔ No</span></div>
+            <div class="stat-row"><span class="stat-label">🕒 System Time</span><span class="stat-value" id="sysTime">--</span></div>
+            <div class="stat-row"><span class="stat-label">🖥️ Drives Monitored</span><span class="stat-value" id="driveCount">--</span></div>
+            <div class="stat-row"><span class="stat-label">🚫 Files Rejected (1h)</span><span class="stat-value reject" id="rejectCount">--</span></div>
+            <div class="stat-row"><span class="stat-label">📦 Quarantine Size</span><span class="stat-value neutral" id="quarantineSize">--</span></div>
+            <div class="stat-row"><span class="stat-label">⚡ Energy Spike (Group 31)</span><span class="stat-value" id="energySpike">✅ No</span></div>
         </div>
     </div>
 
@@ -70,102 +137,159 @@
         <h2>Recent Rejections</h2>
         <table>
             <thead><tr><th>File</th><th>Drive</th><th>Reason</th><th>Time</th></tr></thead>
-            <tbody id="rejectTable"><tr><td colspan="4">No rejections logged yet.</td></tr></tbody>
+            <tbody id="rejectTable"><tr><td colspan="4">No rejections logged.</td></tr></tbody>
         </table>
+        <button class="clear-btn" id="clearRejections">🗑️ Clear Rejection Log</button>
+    </div>
+
+    <div class="card">
+        <div class="shortcuts">
+            <strong>Testing Shortcuts:</strong><br>
+            Press <kbd>Ctrl</kbd> + <kbd>R</kbd> to simulate a new rejection.<br>
+            Press <kbd>Ctrl</kbd> + <kbd>S</kbd> to toggle Energy Spike (Group 31).<br>
+            Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to clear all data.
+        </div>
     </div>
 
     <div class="footer">All rights reserved · Sa Akhran®</div>
 
     <script>
-        // Simulate a live dashboard using localStorage to store events.
-        // This is a frontend-only simulation for demonstration.
-        // When connected to the real backend, replace fetch calls.
+        const REJECT_KEY = 'sa_rejections';
+        const SPIKE_KEY = 'sa_spike';
 
-        // ---- Initialize ----
-        function init() {
-            // Generate some mock data if empty
-            if (!localStorage.getItem('rejections')) {
+        function getRejections() {
+            return JSON.parse(localStorage.getItem(REJECT_KEY) || '[]');
+        }
+
+        function setRejections(rejs) {
+            localStorage.setItem(REJECT_KEY, JSON.stringify(rejs));
+        }
+
+        function getSpike() {
+            return localStorage.getItem(SPIKE_KEY) === 'true';
+        }
+
+        function setSpike(val) {
+            localStorage.setItem(SPIKE_KEY, String(val));
+        }
+
+        function seedData() {
+            if (!localStorage.getItem(REJECT_KEY)) {
                 const mock = [
-                    { file: 'virus.exe', drive: '/mnt/music', reason: 'Group 7 not allowed', time: new Date().toISOString() },
-                    { file: 'malware.bin', drive: '/mnt/backups', reason: 'Group 27 not allowed', time: new Date(Date.now() - 600000).toISOString() },
-                    { file: 'spam.pdf', drive: '/mnt/secure', reason: 'Group 19 not allowed', time: new Date(Date.now() - 1200000).toISOString() }
+                    { file: 'virus.exe', drive: '/mnt/music', reason: 'Group 7 (Executable) not allowed in Media drive', time: new Date(Date.now() - 120000).toISOString() },
+                    { file: 'malware.bin', drive: '/mnt/backups', reason: 'Group 27 (USB) not allowed in Archive drive', time: new Date(Date.now() - 300000).toISOString() },
+                    { file: 'spam.pdf', drive: '/mnt/secure', reason: 'Group 19 (UI/Media) not allowed in Kernel drive', time: new Date(Date.now() - 600000).toISOString() }
                 ];
-                localStorage.setItem('rejections', JSON.stringify(mock));
+                setRejections(mock);
             }
-            if (!localStorage.getItem('spikeDetected')) {
-                localStorage.setItem('spikeDetected', 'false');
+            if (localStorage.getItem(SPIKE_KEY) === null) {
+                setSpike(false);
             }
-            render();
         }
 
         function render() {
-            // Time
             document.getElementById('sysTime').textContent = new Date().toLocaleString();
-
-            // Drives: from config example
             const drives = ['/mnt/music', '/mnt/code', '/mnt/backups', '/mnt/secure'];
             document.getElementById('driveCount').textContent = drives.length;
-
-            // Rejections count (last hour)
-            const rejs = JSON.parse(localStorage.getItem('rejections') || '[]');
+            const rejs = getRejections();
             const now = Date.now();
             const lastHour = rejs.filter(r => (now - new Date(r.time).getTime()) < 3600000);
             document.getElementById('rejectCount').textContent = lastHour.length;
-
-            // Quarantine size: simulate
-            document.getElementById('quarantineSize').textContent = (rejs.length * 2.5).toFixed(1) + ' MB';
-
-            // Energy spike
-            const spike = localStorage.getItem('spikeDetected') === 'true';
-            document.getElementById('energySpike').innerHTML = spike ? '🚨 YES (Group 31)' : '✅ No';
-            document.getElementById('energySpike').className = 'stat-value ' + (spike ? 'reject' : 'pass');
-
-            // Rules list
+            const sizeMB = (rejs.length * 2.5).toFixed(1);
+            document.getElementById('quarantineSize').textContent = sizeMB + ' MB';
+            const spike = getSpike();
+            const spikeEl = document.getElementById('energySpike');
+            if (spike) {
+                spikeEl.innerHTML = '🚨 <span class="reject">YES (Group 31)</span>';
+            } else {
+                spikeEl.innerHTML = '✅ <span class="pass">No</span>';
+            }
             const rules = [
-                { drive: '/mnt/music', allowed: '19-24 (Media/UI)' },
-                { drive: '/mnt/code', allowed: '7-12 (Executables)' },
-                { drive: '/mnt/backups', allowed: '25-30 (Storage/Archives)' },
-                { drive: '/mnt/secure', allowed: '1-6, 31-36 (Kernel/Anomaly)' }
+                { drive: '/mnt/music', allowed: '🎵 Groups 19-24 (Media/UI)' },
+                { drive: '/mnt/code', allowed: '💻 Groups 7-12 (Executables)' },
+                { drive: '/mnt/backups', allowed: '📦 Groups 25-30 (Storage/Archives)' },
+                { drive: '/mnt/secure', allowed: '🔒 Groups 1-6 & 31-36 (Kernel/Anomaly)' }
             ];
             document.getElementById('rulesList').innerHTML = rules.map(r =>
                 `<div class="stat-row"><span class="stat-label">📁 ${r.drive}</span><span class="stat-value">${r.allowed}</span></div>`
             ).join('');
-
-            // Rejection table
             const tbody = document.getElementById('rejectTable');
             if (rejs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4">No rejections logged yet.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4">✅ No rejections logged. System clean.</td></tr>';
             } else {
                 tbody.innerHTML = rejs.slice(-5).reverse().map(r =>
-                    `<tr><td>${r.file}</td><td>${r.drive}</td><td class="reject">${r.reason}</td><td>${new Date(r.time).toLocaleString()}</td></tr>`
+                    `<tr>
+                        <td><span class="badge badge-red">⛔</span> ${r.file}</td>
+                        <td>${r.drive}</td>
+                        <td class="reject">${r.reason}</td>
+                        <td style="font-size:12px;color:#8b949e;">${new Date(r.time).toLocaleString()}</td>
+                    </tr>`
                 ).join('');
             }
         }
 
-        init();
-        setInterval(render, 5000);
+        function addRejection(file, drive, reason) {
+            const rejs = getRejections();
+            rejs.push({
+                file: file || 'test_malware.exe',
+                drive: drive || '/mnt/music',
+                reason: reason || 'Group mismatch (Sluice‑bench)',
+                time: new Date().toISOString()
+            });
+            setRejections(rejs);
+            render();
+        }
 
-        // Simulate a new rejection (for demo, press a hidden button)
-        // Add a simple test button to simulate rejection
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'r' && e.ctrlKey) {
-                const rejs = JSON.parse(localStorage.getItem('rejections') || '[]');
-                rejs.push({
-                    file: 'test_malware.exe',
-                    drive: '/mnt/music',
-                    reason: 'Group 7 not allowed (Sluice‑bench)',
-                    time: new Date().toISOString()
-                });
-                localStorage.setItem('rejections', JSON.stringify(rejs));
+        function clearRejections() {
+            if (confirm('Delete all rejection logs?')) {
+                setRejections([]);
                 render();
             }
-            if (e.key === 's' && e.ctrlKey) {
-                // Toggle energy spike
-                const val = localStorage.getItem('spikeDetected') === 'true' ? 'false' : 'true';
-                localStorage.setItem('spikeDetected', val);
+        }
+
+        function clearAllData() {
+            if (confirm('Delete ALL data (rejections + spike state)?')) {
+                localStorage.removeItem(REJECT_KEY);
+                localStorage.removeItem(SPIKE_KEY);
+                seedData();
                 render();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                const drives = ['/mnt/music', '/mnt/code', '/mnt/backups', '/mnt/secure'];
+                const files = ['suspicious.exe', 'ransomware.bin', 'spam.doc', 'trojan.apk'];
+                const reasons = [
+                    'Group 7 not allowed in Media drive',
+                    'Group 27 not allowed in Archive drive',
+                    'Group 19 not allowed in Kernel drive',
+                    'Group 11 not allowed in Backup drive'
+                ];
+                const idx = Math.floor(Math.random() * drives.length);
+                addRejection(
+                    files[Math.floor(Math.random() * files.length)],
+                    drives[idx],
+                    reasons[idx]
+                );
+            }
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                setSpike(!getSpike());
+                render();
+            }
+            if (e.ctrlKey && e.key === 'c') {
+                e.preventDefault();
+                clearAllData();
             }
         });
+
+        document.getElementById('clearRejections').addEventListener('click', clearRejections);
+
+        seedData();
+        render();
+        setInterval(render, 5000);
     </script>
 </body>
 </html>
