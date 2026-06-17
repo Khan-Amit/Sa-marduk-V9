@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa-marduk-V9 · Energy</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Energy Consumption · Rate/sec</h1>
+        <a href="index.html">← Back</a>
+    </header>
+
+    <section>
+        <div class="dial-container">
+            <canvas id="energy-dial" width="200" height="200"></canvas>
+            <div id="energy-digital">0.00 W/s</div>
+        </div>
+        <p>Query level 1 (priority group 3,6,9)</p>
+    </section>
+
+    <footer>
+        <p>All rights reserved · Sa Akhran®</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        const canvas = document.getElementById('energy-dial');
+        const ctx = canvas.getContext('2d');
+        const digital = document.getElementById('energy-digital');
+
+        function drawDial(value) {
+            // value in watts, expected 0-100
+            const percent = Math.min(value / 100, 1);
+            const angle = percent * 2 * Math.PI - Math.PI / 2;
+            const radius = 80;
+            const cx = 100, cy = 100;
+
+            ctx.clearRect(0, 0, 200, 200);
+            // background arc
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 12;
+            ctx.stroke();
+
+            // active arc
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, -Math.PI / 2, angle);
+            ctx.strokeStyle = '#0f0';
+            ctx.lineWidth = 12;
+            ctx.stroke();
+
+            // center text
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px monospace';
+            ctx.fillText(value.toFixed(1) + 'W', 80, 110);
+        }
+
+        function updateEnergy() {
+            fetch('/api/energy_rate')
+                .then(r => r.json())
+                .then(data => {
+                    const rate = data.rate || 0;
+                    digital.innerText = rate.toFixed(2) + ' W/s';
+                    drawDial(rate);
+                })
+                .catch(() => {
+                    digital.innerText = '-- W/s';
+                });
+        }
+
+        setInterval(updateEnergy, 500);
+        updateEnergy();
+    </script>
+</body>
+</html>
