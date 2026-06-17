@@ -3,243 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sa-marduk-V9 · Login & Traffic</title>
+    <title>Sa-marduk-V9 · Login</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{
-            font-family:'Segoe UI',sans-serif;
-            background:#0d1117;
-            color:#c9d1d9;
-            padding:20px;
-            max-width:600px;
-            margin:0 auto;
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            font-size: 20px;
         }
-        .card{
-            background:#161b22;
-            padding:25px;
-            border-radius:8px;
-            border:1px solid #30363d;
-            margin-bottom:20px;
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        h1 { color: #58a6ff; font-size: 2.2rem; }
+        .back-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
         }
-        h2{color:#58a6ff;margin-bottom:5px}
-        .sub{color:#8b949e;font-size:14px;margin-bottom:20px}
-        .input-group{margin-bottom:15px}
-        label{display:block;margin-bottom:5px;font-size:14px}
-        input{
-            width:100%;
-            padding:10px;
-            background:#0d1117;
-            border:1px solid #30363d;
-            border-radius:6px;
-            color:white;
-            font-size:16px;
+        .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+        .card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
         }
-        input:focus{border-color:#58a6ff;outline:none}
-        button{
-            width:100%;
-            padding:12px;
-            background:#238636;
-            color:white;
-            border:none;
-            border-radius:6px;
-            font-size:16px;
-            font-weight:bold;
-            cursor:pointer;
+        input, button {
+            font-size: 1.2rem;
+            padding: 15px;
+            width: 100%;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 2px solid #30363d;
+            background: #0d1117;
+            color: #c9d1d9;
         }
-        button:hover{background:#2ea44f}
-        .msg{margin-top:12px;font-weight:bold}
-        .success{color:#3fb950}
-        .error{color:#f85149}
-
-        /* Traffic Table */
-        table{
-            width:100%;
-            border-collapse:collapse;
-            margin-top:10px;
-            font-size:14px;
+        button {
+            background: #238636;
+            color: #fff;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
         }
-        th,td{
-            border-bottom:1px solid #30363d;
-            padding:10px 5px;
-            text-align:left;
+        button:hover { background: #2ea44f; }
+        .msg { margin: 10px 0; font-weight: bold; font-size: 1.2rem; }
+        .traffic-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #30363d;
+            font-size: 1.1rem;
         }
-        th{color:#58a6ff;font-weight:normal}
-        .empty{color:#8b949e;padding:15px 0;text-align:center}
-        .badge{
-            background:#238636;
-            color:#fff;
-            padding:2px 8px;
-            border-radius:12px;
-            font-size:11px;
+        .traffic-item:last-child { border-bottom: none; }
+        footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
         }
-        .clear-btn{
-            background:#da3633;
-            margin-top:10px;
-            font-size:14px;
-            padding:8px;
-        }
-        .clear-btn:hover{background:#f85149}
     </style>
 </head>
 <body>
+    <header>
+        <h1>🔐 Login</h1>
+        <a href="index.html" class="back-btn">← Back to Home</a>
+    </header>
 
-    <!-- ===== LOGIN CARD ===== -->
     <div class="card">
-        <h2>🔐 Sa-marduk-V9</h2>
-        <p class="sub">Virus & Spam Guard · Seliim Ahmed</p>
-
+        <h2 style="font-size:1.8rem;">Save your credentials</h2>
         <form id="loginForm">
-            <div class="input-group">
-                <label>Full Name</label>
-                <input type="text" id="userName" placeholder="Seliim Ahmed" required>
-            </div>
-            <div class="input-group">
-                <label>Phone Number</label>
-                <input type="tel" id="userPhone" placeholder="+66615729906" required>
-            </div>
-            <button type="submit">✅ Save Login to Database</button>
+            <input type="text" id="userName" placeholder="Full Name" required>
+            <input type="tel" id="userPhone" placeholder="Phone Number" required>
+            <button type="submit">💾 Save Login</button>
         </form>
         <div id="loginMsg" class="msg"></div>
     </div>
 
-    <!-- ===== TRAFFIC DATABASE CARD ===== -->
     <div class="card">
-        <h2>📊 Login Traffic</h2>
-        <p class="sub">All saved entries (phone memory)</p>
-
-        <div id="trafficContainer">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody id="trafficBody">
-                    <!-- Filled by JavaScript -->
-                </tbody>
-            </table>
-            <div id="emptyState" class="empty">No logins saved yet.</div>
-        </div>
-
-        <button id="clearAllBtn" class="clear-btn">🗑️ Clear All Traffic</button>
+        <h2 style="font-size:1.8rem;">📋 Traffic Log</h2>
+        <div id="trafficList"></div>
     </div>
 
-    <script>
-        // -------- DATABASE (your "software database") --------
-        // Uses localStorage – saves forever on your phone.
-        const DB_KEY = 'sa_traffic_db';
+    <footer>All rights reserved · Sa Akhran®</footer>
 
-        // Load all records
-        function getTraffic() {
+    <script>
+        // ----- Database: localStorage -----
+        const DB_KEY = 'sa_logins';
+
+        function getLogins() {
             const data = localStorage.getItem(DB_KEY);
             return data ? JSON.parse(data) : [];
         }
 
-        // Save a new record
-        function addTraffic(name, phone) {
-            const traffic = getTraffic();
-            const now = new Date();
-            const timestamp = now.toLocaleString('en-US', {
-                day: '2-digit', month: 'short', year: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit'
-            });
-            traffic.push({
-                id: Date.now(),
-                name: name,
-                phone: phone,
-                time: timestamp
-            });
-            localStorage.setItem(DB_KEY, JSON.stringify(traffic));
-            renderTraffic();
-            return traffic;
+        function saveLogin(name, phone) {
+            const logins = getLogins();
+            logins.push({ name, phone, timestamp: new Date().toISOString() });
+            localStorage.setItem(DB_KEY, JSON.stringify(logins));
         }
 
-        // Clear all
-        function clearTraffic() {
-            localStorage.removeItem(DB_KEY);
-            renderTraffic();
-        }
-
-        // -------- RENDER TABLE --------
         function renderTraffic() {
-            const traffic = getTraffic();
-            const tbody = document.getElementById('trafficBody');
-            const empty = document.getElementById('emptyState');
-
-            if (traffic.length === 0) {
-                tbody.innerHTML = '';
-                empty.style.display = 'block';
+            const logins = getLogins();
+            const container = document.getElementById('trafficList');
+            if (logins.length === 0) {
+                container.innerHTML = '<p style="color:#8b949e;">No logins yet.</p>';
                 return;
             }
-            empty.style.display = 'none';
-
+            // Show latest first
+            const reversed = logins.slice().reverse();
             let html = '';
-            // Show latest first (reverse order)
-            const reversed = [...traffic].reverse();
-            reversed.forEach((entry, index) => {
-                html += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td><strong>${escapeHtml(entry.name)}</strong></td>
-                        <td>${escapeHtml(entry.phone)}</td>
-                        <td style="font-size:12px;color:#8b949e;">${escapeHtml(entry.time)}</td>
-                    </tr>
-                `;
+            reversed.forEach(entry => {
+                const time = new Date(entry.timestamp).toLocaleString();
+                html += `<div class="traffic-item">${entry.name} (${entry.phone}) – ${time}</div>`;
             });
-            tbody.innerHTML = html;
+            container.innerHTML = html;
         }
 
-        // Simple security against XSS (just in case)
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // -------- HANDLE LOGIN FORM --------
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // Form submit
+        document.getElementById('loginForm').onsubmit = function(e) {
             e.preventDefault();
-
             const name = document.getElementById('userName').value.trim();
             const phone = document.getElementById('userPhone').value.trim();
             const msg = document.getElementById('loginMsg');
-
             if (!name || !phone) {
-                msg.textContent = '❌ Please fill both fields.';
-                msg.className = 'msg error';
+                msg.textContent = '❌ Both fields required.';
+                msg.style.color = '#f85149';
                 return;
             }
-
-            // Save to database
-            addTraffic(name, phone);
-
-            msg.textContent = '✅ Login saved successfully!';
-            msg.className = 'msg success';
-
-            // Clear form fields for next entry
+            saveLogin(name, phone);
+            msg.textContent = '✅ Saved successfully!';
+            msg.style.color = '#3fb950';
             document.getElementById('userName').value = '';
             document.getElementById('userPhone').value = '';
+            renderTraffic();
+            // Auto-clear message after 3s
+            setTimeout(() => { msg.textContent = ''; }, 3000);
+        };
 
-            // Auto-hide success message after 3 seconds
-            setTimeout(() => {
-                msg.textContent = '';
-                msg.className = 'msg';
-            }, 3000);
-        });
-
-        // -------- CLEAR ALL --------
-        document.getElementById('clearAllBtn').addEventListener('click', function() {
-            if (confirm('Delete all saved login records?')) {
-                clearTraffic();
-            }
-        });
-
-        // -------- INITIAL RENDER --------
+        // Initial render
         renderTraffic();
     </script>
-
 </body>
 </html>
