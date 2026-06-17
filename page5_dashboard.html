@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sa-marduk-V9 · Dashboard</title>
+    <title>Sa‑marduk‑V9 · Dashboard</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
@@ -11,90 +11,161 @@
             background: #0d1117;
             color: #c9d1d9;
             padding: 20px;
-            max-width: 700px;
+            max-width: 800px;
             margin: auto;
-            font-size: 20px;
+            font-size: 18px;
         }
-        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
         h1 { color: #58a6ff; font-size: 2.2rem; }
-        .back-btn {
-            background: #161b22;
-            border: 2px solid #30363d;
-            padding: 10px 20px;
-            border-radius: 8px;
-            color: #c9d1d9;
-            text-decoration: none;
-            font-size: 1rem;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
+        .back-btn { background: #161b22; border: 2px solid #30363d; padding: 8px 18px; border-radius: 8px; color: #c9d1d9; text-decoration: none; }
         .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
         .card {
             background: #161b22;
             border: 2px solid #30363d;
             border-radius: 12px;
-            padding: 25px;
+            padding: 20px;
             margin: 20px 0;
         }
         .stat-row {
             display: flex;
             justify-content: space-between;
-            padding: 15px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #30363d;
-            font-size: 1.3rem;
         }
         .stat-row:last-child { border-bottom: none; }
         .stat-label { color: #8b949e; }
-        .stat-value { color: #c9d1d9; font-weight: bold; }
-        footer {
-            margin-top: 40px;
-            border-top: 2px solid #30363d;
-            padding: 15px 0;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #8b949e;
-        }
+        .stat-value { font-weight: bold; }
+        .pass { color: #3fb950; }
+        .reject { color: #f85149; }
+        .neutral { color: #d29922; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+        th, td { border-bottom: 1px solid #30363d; padding: 8px 5px; text-align: left; }
+        th { color: #58a6ff; }
+        .footer { margin-top: 40px; border-top: 2px solid #30363d; padding: 15px 0; text-align: center; font-size: 0.9rem; color: #8b949e; }
     </style>
 </head>
 <body>
     <header>
-        <h1>📊 Dashboard</h1>
-        <a href="index.html" class="back-btn">← Back to Home</a>
+        <h1>📊 Sluice‑bench Dashboard</h1>
+        <a href="index.html" class="back-btn">← Back</a>
     </header>
 
-    <div class="card" id="dashContent">
-        <p style="font-size:1.4rem;">Loading stats...</p>
+    <div class="card">
+        <h2>Live Status</h2>
+        <div id="liveStats">
+            <div class="stat-row"><span class="stat-label">🔵 System Time:</span><span class="stat-value" id="sysTime">--</span></div>
+            <div class="stat-row"><span class="stat-label">🟢 Total Drives Monitored:</span><span class="stat-value" id="driveCount">--</span></div>
+            <div class="stat-row"><span class="stat-label">🔴 Files Rejected (Last Hour):</span><span class="stat-value reject" id="rejectCount">--</span></div>
+            <div class="stat-row"><span class="stat-label">🟡 Quarantine Size:</span><span class="stat-value neutral" id="quarantineSize">--</span></div>
+            <div class="stat-row"><span class="stat-label">⚡ Energy Spike Detected:</span><span class="stat-value" id="energySpike">⛔ No</span></div>
+        </div>
     </div>
 
-    <footer>All rights reserved · Sa Akhran®</footer>
+    <div class="card">
+        <h2>Segregation Rules</h2>
+        <div id="rulesList">Loading...</div>
+    </div>
+
+    <div class="card">
+        <h2>Recent Rejections</h2>
+        <table>
+            <thead><tr><th>File</th><th>Drive</th><th>Reason</th><th>Time</th></tr></thead>
+            <tbody id="rejectTable"><tr><td colspan="4">No rejections logged yet.</td></tr></tbody>
+        </table>
+    </div>
+
+    <div class="footer">All rights reserved · Sa Akhran®</div>
 
     <script>
-        function renderDashboard() {
-            const container = document.getElementById('dashContent');
-            // Get latest readings from localStorage
-            const sensors = JSON.parse(localStorage.getItem('sa_sensors') || '[]');
-            const logins = JSON.parse(localStorage.getItem('sa_logins') || '[]');
+        // Simulate a live dashboard using localStorage to store events.
+        // This is a frontend-only simulation for demonstration.
+        // When connected to the real backend, replace fetch calls.
 
-            const latest = (type) => {
-                const entries = sensors.filter(s => s.type === type);
-                return entries.length > 0 ? entries[entries.length-1].value : 'N/A';
-            };
-
-            const energy = latest('energy');
-            const speed = latest('speed');
-            const storage = latest('storage');
-
-            const html = `
-                <div class="stat-row"><span class="stat-label">🔋 Battery</span><span class="stat-value">${energy}%</span></div>
-                <div class="stat-row"><span class="stat-label">🌐 Network Speed</span><span class="stat-value">${speed !== 'N/A' ? speed.toFixed(1) : 'N/A'} Mbps</span></div>
-                <div class="stat-row"><span class="stat-label">💾 Storage Used</span><span class="stat-value">${storage !== 'N/A' ? Math.round(storage) + '%' : 'N/A'}</span></div>
-                <div class="stat-row"><span class="stat-label">👥 Total Logins</span><span class="stat-value">${logins.length}</span></div>
-                <div class="stat-row"><span class="stat-label">📅 Last Login</span><span class="stat-value">${logins.length > 0 ? new Date(logins[logins.length-1].timestamp).toLocaleString() : 'None'}</span></div>
-            `;
-            container.innerHTML = html;
+        // ---- Initialize ----
+        function init() {
+            // Generate some mock data if empty
+            if (!localStorage.getItem('rejections')) {
+                const mock = [
+                    { file: 'virus.exe', drive: '/mnt/music', reason: 'Group 7 not allowed', time: new Date().toISOString() },
+                    { file: 'malware.bin', drive: '/mnt/backups', reason: 'Group 27 not allowed', time: new Date(Date.now() - 600000).toISOString() },
+                    { file: 'spam.pdf', drive: '/mnt/secure', reason: 'Group 19 not allowed', time: new Date(Date.now() - 1200000).toISOString() }
+                ];
+                localStorage.setItem('rejections', JSON.stringify(mock));
+            }
+            if (!localStorage.getItem('spikeDetected')) {
+                localStorage.setItem('spikeDetected', 'false');
+            }
+            render();
         }
-        renderDashboard();
-        setInterval(renderDashboard, 5000);
+
+        function render() {
+            // Time
+            document.getElementById('sysTime').textContent = new Date().toLocaleString();
+
+            // Drives: from config example
+            const drives = ['/mnt/music', '/mnt/code', '/mnt/backups', '/mnt/secure'];
+            document.getElementById('driveCount').textContent = drives.length;
+
+            // Rejections count (last hour)
+            const rejs = JSON.parse(localStorage.getItem('rejections') || '[]');
+            const now = Date.now();
+            const lastHour = rejs.filter(r => (now - new Date(r.time).getTime()) < 3600000);
+            document.getElementById('rejectCount').textContent = lastHour.length;
+
+            // Quarantine size: simulate
+            document.getElementById('quarantineSize').textContent = (rejs.length * 2.5).toFixed(1) + ' MB';
+
+            // Energy spike
+            const spike = localStorage.getItem('spikeDetected') === 'true';
+            document.getElementById('energySpike').innerHTML = spike ? '🚨 YES (Group 31)' : '✅ No';
+            document.getElementById('energySpike').className = 'stat-value ' + (spike ? 'reject' : 'pass');
+
+            // Rules list
+            const rules = [
+                { drive: '/mnt/music', allowed: '19-24 (Media/UI)' },
+                { drive: '/mnt/code', allowed: '7-12 (Executables)' },
+                { drive: '/mnt/backups', allowed: '25-30 (Storage/Archives)' },
+                { drive: '/mnt/secure', allowed: '1-6, 31-36 (Kernel/Anomaly)' }
+            ];
+            document.getElementById('rulesList').innerHTML = rules.map(r =>
+                `<div class="stat-row"><span class="stat-label">📁 ${r.drive}</span><span class="stat-value">${r.allowed}</span></div>`
+            ).join('');
+
+            // Rejection table
+            const tbody = document.getElementById('rejectTable');
+            if (rejs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">No rejections logged yet.</td></tr>';
+            } else {
+                tbody.innerHTML = rejs.slice(-5).reverse().map(r =>
+                    `<tr><td>${r.file}</td><td>${r.drive}</td><td class="reject">${r.reason}</td><td>${new Date(r.time).toLocaleString()}</td></tr>`
+                ).join('');
+            }
+        }
+
+        init();
+        setInterval(render, 5000);
+
+        // Simulate a new rejection (for demo, press a hidden button)
+        // Add a simple test button to simulate rejection
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' && e.ctrlKey) {
+                const rejs = JSON.parse(localStorage.getItem('rejections') || '[]');
+                rejs.push({
+                    file: 'test_malware.exe',
+                    drive: '/mnt/music',
+                    reason: 'Group 7 not allowed (Sluice‑bench)',
+                    time: new Date().toISOString()
+                });
+                localStorage.setItem('rejections', JSON.stringify(rejs));
+                render();
+            }
+            if (e.key === 's' && e.ctrlKey) {
+                // Toggle energy spike
+                const val = localStorage.getItem('spikeDetected') === 'true' ? 'false' : 'true';
+                localStorage.setItem('spikeDetected', val);
+                render();
+            }
+        });
     </script>
 </body>
 </html>
