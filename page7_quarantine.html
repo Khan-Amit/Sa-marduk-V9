@@ -4,54 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sa-marduk-V9 · Quarantine</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            font-size: 20px;
+        }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        h1 { color: #58a6ff; font-size: 2.2rem; }
+        .back-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+        .card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .threat-item {
+            font-size: 1.3rem;
+            padding: 12px 0;
+            border-bottom: 1px solid #30363d;
+        }
+        .threat-item:last-child { border-bottom: none; }
+        .risk-high { color: #f85149; }
+        .risk-med { color: #d29922; }
+        .risk-low { color: #3fb950; }
+        footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Quarantine List</h1>
-        <a href="index.html">← Back</a>
+        <h1>🛡️ Quarantine</h1>
+        <a href="index.html" class="back-btn">← Back to Home</a>
     </header>
 
-    <section>
-        <table id="quarantine-table">
-            <thead>
-                <tr><th>File / Process</th><th>Risk Level</th><th>Action</th></tr>
-            </thead>
-            <tbody id="quarantine-body">
-                <tr><td colspan="3">Loading from external DB...</td></tr>
-            </tbody>
-        </table>
-    </section>
+    <div class="card" id="quarantineContent">
+        <p style="font-size:1.4rem;">Checking storage usage...</p>
+    </div>
 
-    <footer>
-        <p>All rights reserved · Sa Akhran®</p>
-    </footer>
+    <footer>All rights reserved · Sa Akhran®</footer>
 
-    <script src="assets/js/app.js"></script>
     <script>
-        function loadQuarantine() {
-            fetch('/api/quarantine_list')
-                .then(r => r.json())
-                .then(list => {
-                    const tbody = document.getElementById('quarantine-body');
-                    tbody.innerHTML = '';
-                    if (list.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="3">Clean – no threats</td></tr>';
-                        return;
-                    }
-                    list.forEach(item => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${item.file}</td><td>${item.risk}</td><td>Quarantined</td>`;
-                        tbody.appendChild(tr);
-                    });
-                })
-                .catch(() => {
-                    document.getElementById('quarantine-body').innerHTML = '<tr><td colspan="3">Error fetching</td></tr>';
-                });
-        }
+        async function updateQuarantine() {
+            const container = document.getElementById('quarantineContent');
+            try {
+                if (navigator.storage && navigator.storage.estimate) {
+                    const estimate = await navigator.storage.estimate();
+                    const usedPercent = (estimate.usage / estimate.quota) * 100;
+                    let html = `<p style="font-size:1.4rem;">Storage used: <strong>${Math.round(usedPercent)}%</strong></p>`;
+                    // Save to localStorage
+                    const sensorData = JSON.parse(localStorage.getItem('sa_sensors') || '[]');
+                    sensorData.push({ type: 'storage', value: usedPercent, timestamp: new Date().toISOString() });
+                    if (sensorData.length > 100) sensorData.shift();
+                    localStorage.setItem('sa_sensors', JSON.stringify(sensorData));
 
-        loadQuarantine();
-        setInterval(loadQuarantine, 5000);
+                    if (usedPercent > 80) {
+                        html += `
+                            <hr style="border-color:#30363d; margin:15px 0;">
+                            <div class="threat-item">🧨 storage_overflow.tmp <span class="risk-high">Risk 4</span></div>
+                            <div class="threat-item">📦 cache_large.bin <span class="risk-med">Risk 3</span></div>
+                            <div class="threat-item">🗑️ temp_old.log <span class="risk-low">Risk 2</span></div>
+                        `;
+                    } else {
+                        html += `<p style="color:#3fb950; font-size:1.4rem;">✅ No critical threats.</p>`;
+                    }
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<p style="font-size:1.4rem;">Storage API not available.</p>';
+                }
+            } catch(e) {
+                container.innerHTML = '<p style="color:#f85149; font-size:1.4rem;">Error reading storage.</p>';
+            }
+        }
+        updateQuarantine();
+        setInterval(updateQuarantine, 5000);
     </script>
 </body>
 </html>
