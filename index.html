@@ -21,20 +21,9 @@
             margin-bottom: 25px;
             text-align: center;
         }
-        h1 {
-            color: #58a6ff;
-            font-size: 2.8rem;
-            letter-spacing: 2px;
-        }
-        .sub {
-            color: #8b949e;
-            font-size: 1.2rem;
-        }
-        .contact {
-            font-size: 0.9rem;
-            color: #8b949e;
-            margin-top: 5px;
-        }
+        h1 { color: #58a6ff; font-size: 2.8rem; letter-spacing: 2px; }
+        .sub { color: #8b949e; font-size: 1.2rem; }
+        .contact { font-size: 0.9rem; color: #8b949e; margin-top: 5px; }
         .nav-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -52,6 +41,10 @@
             font-size: 1.5rem;
             font-weight: bold;
             transition: 0.2s ease;
+            cursor: pointer;
+            display: block;
+            font-family: inherit;
+            width: 100%;
         }
         .nav-btn:hover {
             background: #1c2333;
@@ -66,23 +59,11 @@
             color: #8b949e;
             margin-top: 5px;
         }
-        .nav-btn.download-btn {
-            border-color: #238636;
-        }
-        .nav-btn.download-btn:hover {
-            border-color: #3fb950;
-            color: #3fb950;
-        }
-        .nav-btn.engine-btn {
-            border-color: #d29922;
-        }
-        .nav-btn.engine-btn:hover {
-            border-color: #f0b33d;
-            color: #f0b33d;
-        }
-        .full-width {
-            grid-column: 1 / -1;
-        }
+        .nav-btn.engine-btn { border-color: #d29922; }
+        .nav-btn.engine-btn:hover { border-color: #f0b33d; color: #f0b33d; }
+        .nav-btn.zip-btn { border-color: #8b5cf6; }
+        .nav-btn.zip-btn:hover { border-color: #a78bfa; color: #a78bfa; }
+        .full-width { grid-column: 1 / -1; }
         footer {
             margin-top: 40px;
             border-top: 2px solid #30363d;
@@ -91,6 +72,17 @@
             font-size: 0.9rem;
             color: #8b949e;
         }
+        #downloadStatus {
+            margin-top: 10px;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            grid-column: 1 / -1;
+        }
+        #downloadStatus.success { background: #1a3a1a; color: #3fb950; border: 1px solid #3fb950; display: block; }
+        #downloadStatus.error { background: #3a1a1a; color: #f85149; border: 1px solid #f85149; display: block; }
         @media (max-width: 500px) {
             .nav-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: 1; }
@@ -113,21 +105,77 @@
         <a href="page9_queries_high.html" class="nav-btn">🚨 High Queries <small>System alerts</small></a>
         <a href="page5_dashboard.html" class="nav-btn">📊 Dashboard <small>All stats</small></a>
 
-        <!-- ***** NEW: The Real Engine (36 Groups + Brahma + Enigma) ***** -->
+        <!-- Analyze Engine -->
         <a href="analyze.html" class="nav-btn engine-btn full-width">
             🧠 Analyze Engine
-            <small>36‑Group Classification · Voice of Brahma · Enigma Output</small>
+            <small>Dropdown Threat Selector · Drive Selector · 36‑Group Classification</small>
         </a>
 
-        <!-- ***** NEW: Download Option (like Count X SA) ***** -->
-        <a href="analyze.html" download="Sa_Akhran_Engine.html" class="nav-btn download-btn full-width">
-            📥 Download Engine
-            <small>Save the full analyzer as a standalone HTML file</small>
-        </a>
+        <!-- DOWNLOAD ZIP BUTTON -->
+        <button id="downloadZipBtn" class="nav-btn zip-btn full-width" style="border:2px solid #8b5cf6;">
+            📦 Download Portable ZIP
+            <small>Full engine + UI + README – runs offline</small>
+        </button>
+        <div id="downloadStatus"></div>
     </div>
 
-    <footer>
-        All rights reserved · Sa Akhran®
-    </footer>
+    <footer>All rights reserved · Sa Akhran®</footer>
+
+    <!-- ===== JSZip Library ===== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        document.getElementById('downloadZipBtn').addEventListener('click', function() {
+            const statusDiv = document.getElementById('downloadStatus');
+            statusDiv.className = '';
+
+            if (typeof JSZip === 'undefined') {
+                statusDiv.className = 'error';
+                statusDiv.textContent = '❌ JSZip library not loaded. Check internet.';
+                return;
+            }
+
+            statusDiv.className = 'success';
+            statusDiv.textContent = '⏳ Fetching files and creating ZIP...';
+
+            const zip = new JSZip();
+
+            // Add static files
+            zip.file('README.md', `# Sa-marduk-V9 Portable Engine\n\nThis is the complete Sa Akhran® Virus & Spam Guard classification engine.\n\n- Open analyze.html in any modern browser.\n- No internet required after download.\n- All rights reserved – Seliim Ahmed\n\nContact: amit.khanna.1082@gmail.com`);
+            zip.file('LICENSE', `PROPRIETARY LICENSE\n\nCopyright (c) 2026 Seliim Ahmed. All rights reserved.\n\nUnauthorized reproduction, distribution, or modification is strictly prohibited.\n\nContact: amit.khanna.1082@gmail.com`);
+
+            // Fetch current analyze.html and index.html
+            const filesToFetch = [
+                { url: 'analyze.html', name: 'analyze.html' },
+                { url: 'index.html', name: 'index.html' }
+            ];
+
+            const fetchPromises = filesToFetch.map(file =>
+                fetch(file.url)
+                    .then(res => {
+                        if (!res.ok) throw new Error(`HTTP ${res.status} for ${file.url}`);
+                        return res.text();
+                    })
+                    .then(content => zip.file(file.name, content))
+            );
+
+            Promise.all(fetchPromises)
+                .then(() => zip.generateAsync({ type: 'blob' }))
+                .then(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'Sa_Akhran_Engine.zip';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+                    statusDiv.className = 'success';
+                    statusDiv.textContent = '✅ Download started! Unzip and open analyze.html.';
+                })
+                .catch(err => {
+                    statusDiv.className = 'error';
+                    statusDiv.textContent = '❌ Error: ' + err.message;
+                });
+        });
+    </script>
 </body>
 </html>
