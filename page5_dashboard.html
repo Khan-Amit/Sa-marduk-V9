@@ -117,6 +117,7 @@
         <a href="index.html" class="back-btn">← Back</a>
     </header>
 
+    <!-- Live Stats -->
     <div class="card">
         <h2>Live Status</h2>
         <div id="liveStats">
@@ -128,11 +129,13 @@
         </div>
     </div>
 
+    <!-- Segregation Rules -->
     <div class="card">
         <h2>Segregation Rules</h2>
         <div id="rulesList">Loading...</div>
     </div>
 
+    <!-- Recent Rejections -->
     <div class="card">
         <h2>Recent Rejections</h2>
         <table>
@@ -142,6 +145,7 @@
         <button class="clear-btn" id="clearRejections">🗑️ Clear Rejection Log</button>
     </div>
 
+    <!-- Shortcuts (for testing) -->
     <div class="card">
         <div class="shortcuts">
             <strong>Testing Shortcuts:</strong><br>
@@ -154,6 +158,7 @@
     <div class="footer">All rights reserved · Sa Akhran®</div>
 
     <script>
+        // ---- DATABASE (localStorage) ----
         const REJECT_KEY = 'sa_rejections';
         const SPIKE_KEY = 'sa_spike';
 
@@ -173,6 +178,7 @@
             localStorage.setItem(SPIKE_KEY, String(val));
         }
 
+        // ---- Seed Demo Data ----
         function seedData() {
             if (!localStorage.getItem(REJECT_KEY)) {
                 const mock = [
@@ -187,16 +193,26 @@
             }
         }
 
+        // ---- Render ----
         function render() {
+            // System Time
             document.getElementById('sysTime').textContent = new Date().toLocaleString();
+
+            // Drive Count (from config)
             const drives = ['/mnt/music', '/mnt/code', '/mnt/backups', '/mnt/secure'];
             document.getElementById('driveCount').textContent = drives.length;
+
+            // Rejections (last hour)
             const rejs = getRejections();
             const now = Date.now();
             const lastHour = rejs.filter(r => (now - new Date(r.time).getTime()) < 3600000);
             document.getElementById('rejectCount').textContent = lastHour.length;
+
+            // Quarantine size (simulated from number of rejections)
             const sizeMB = (rejs.length * 2.5).toFixed(1);
             document.getElementById('quarantineSize').textContent = sizeMB + ' MB';
+
+            // Energy Spike
             const spike = getSpike();
             const spikeEl = document.getElementById('energySpike');
             if (spike) {
@@ -204,6 +220,8 @@
             } else {
                 spikeEl.innerHTML = '✅ <span class="pass">No</span>';
             }
+
+            // Rules List
             const rules = [
                 { drive: '/mnt/music', allowed: '🎵 Groups 19-24 (Media/UI)' },
                 { drive: '/mnt/code', allowed: '💻 Groups 7-12 (Executables)' },
@@ -213,6 +231,8 @@
             document.getElementById('rulesList').innerHTML = rules.map(r =>
                 `<div class="stat-row"><span class="stat-label">📁 ${r.drive}</span><span class="stat-value">${r.allowed}</span></div>`
             ).join('');
+
+            // Rejection Table
             const tbody = document.getElementById('rejectTable');
             if (rejs.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4">✅ No rejections logged. System clean.</td></tr>';
@@ -228,6 +248,7 @@
             }
         }
 
+        // ---- Simulate Rejection ----
         function addRejection(file, drive, reason) {
             const rejs = getRejections();
             rejs.push({
@@ -240,6 +261,7 @@
             render();
         }
 
+        // ---- Clear Rejections ----
         function clearRejections() {
             if (confirm('Delete all rejection logs?')) {
                 setRejections([]);
@@ -247,6 +269,7 @@
             }
         }
 
+        // ---- Clear All Data ----
         function clearAllData() {
             if (confirm('Delete ALL data (rejections + spike state)?')) {
                 localStorage.removeItem(REJECT_KEY);
@@ -256,6 +279,7 @@
             }
         }
 
+        // ---- Keyboard Shortcuts ----
         document.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'r') {
                 e.preventDefault();
@@ -285,8 +309,10 @@
             }
         });
 
+        // ---- Event Listeners ----
         document.getElementById('clearRejections').addEventListener('click', clearRejections);
 
+        // ---- Init ----
         seedData();
         render();
         setInterval(render, 5000);
