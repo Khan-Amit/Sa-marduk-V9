@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa-marduk-V9 · High Queries</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>High Priority Queries (Level 3)</h1>
+        <a href="index.html">← Back</a>
+    </header>
+
+    <section>
+        <p>Groups 3, 6, 9 – critical importance</p>
+        <ul id="high-query-list">
+            <li>Loading from external source...</li>
+        </ul>
+    </section>
+
+    <footer>
+        <p>All rights reserved · Sa Akhran®</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        function loadHighQueries() {
+            fetch('/api/high_queries')
+                .then(r => r.json())
+                .then(data => {
+                    const ul = document.getElementById('high-query-list');
+                    ul.innerHTML = '';
+                    if (data.queries && data.queries.length) {
+                        data.queries.forEach(q => {
+                            const li = document.createElement('li');
+                            li.textContent = q;
+                            ul.appendChild(li);
+                        });
+                    } else {
+                        ul.innerHTML = '<li>No high-priority queries at this time.</li>';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('high-query-list').innerHTML = '<li>Error connecting to source.</li>';
+                });
+        }
+
+        loadHighQueries();
+        setInterval(loadHighQueries, 4000);
+    </script>
+</body>
+</html>
