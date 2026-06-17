@@ -4,75 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sa-marduk-V9 · Energy</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            font-size: 20px;
+        }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        h1 { color: #58a6ff; font-size: 2.2rem; }
+        .back-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+        .card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        canvas {
+            background: #0d1117;
+            border-radius: 50%;
+            width: 250px;
+            height: 250px;
+        }
+        #energy-digital {
+            font-size: 3rem;
+            color: #3fb950;
+            margin: 15px 0;
+        }
+        .status {
+            font-size: 1.4rem;
+            color: #8b949e;
+        }
+        footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Energy Consumption · Rate/sec</h1>
-        <a href="index.html">← Back</a>
+        <h1>⚡ Battery Energy</h1>
+        <a href="index.html" class="back-btn">← Back to Home</a>
     </header>
 
-    <section>
-        <div class="dial-container">
-            <canvas id="energy-dial" width="200" height="200"></canvas>
-            <div id="energy-digital">0.00 W/s</div>
-        </div>
-        <p>Query level 1 (priority group 3,6,9)</p>
-    </section>
+    <div class="card">
+        <canvas id="energy-dial" width="200" height="200"></canvas>
+        <div id="energy-digital">-- %</div>
+        <div class="status">Charging: <span id="chargingStatus">--</span></div>
+    </div>
 
-    <footer>
-        <p>All rights reserved · Sa Akhran®</p>
-    </footer>
+    <footer>All rights reserved · Sa Akhran®</footer>
 
-    <script src="assets/js/app.js"></script>
     <script>
         const canvas = document.getElementById('energy-dial');
         const ctx = canvas.getContext('2d');
         const digital = document.getElementById('energy-digital');
+        const chargeSpan = document.getElementById('chargingStatus');
 
-        function drawDial(value) {
-            // value in watts, expected 0-100
-            const percent = Math.min(value / 100, 1);
-            const angle = percent * 2 * Math.PI - Math.PI / 2;
-            const radius = 80;
-            const cx = 100, cy = 100;
-
-            ctx.clearRect(0, 0, 200, 200);
-            // background arc
+        function drawDial(val) {
+            const p = Math.min(val/100, 1);
+            const angle = p * 2 * Math.PI - Math.PI/2;
+            ctx.clearRect(0,0,200,200);
             ctx.beginPath();
-            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 12;
+            ctx.arc(100,100,80,0,2*Math.PI);
+            ctx.strokeStyle='#30363d';
+            ctx.lineWidth=14;
             ctx.stroke();
-
-            // active arc
             ctx.beginPath();
-            ctx.arc(cx, cy, radius, -Math.PI / 2, angle);
-            ctx.strokeStyle = '#0f0';
-            ctx.lineWidth = 12;
+            ctx.arc(100,100,80,-Math.PI/2,angle);
+            ctx.strokeStyle='#3fb950';
+            ctx.lineWidth=14;
             ctx.stroke();
-
-            // center text
-            ctx.fillStyle = '#fff';
-            ctx.font = '20px monospace';
-            ctx.fillText(value.toFixed(1) + 'W', 80, 110);
+            ctx.fillStyle='#c9d1d9';
+            ctx.font='28px monospace';
+            ctx.fillText(val+'%', 70, 115);
         }
 
-        function updateEnergy() {
-            fetch('/api/energy_rate')
-                .then(r => r.json())
-                .then(data => {
-                    const rate = data.rate || 0;
-                    digital.innerText = rate.toFixed(2) + ' W/s';
-                    drawDial(rate);
-                })
-                .catch(() => {
-                    digital.innerText = '-- W/s';
-                });
+        async function updateEnergy() {
+            try {
+                const battery = await navigator.getBattery();
+                const level = Math.round(battery.level * 100);
+                digital.innerText = level + '%';
+                chargeSpan.innerText = battery.charging ? 'Yes' : 'No';
+                drawDial(level);
+                // Save to database (localStorage)
+                const sensorData = JSON.parse(localStorage.getItem('sa_sensors') || '[]');
+                sensorData.push({ type: 'energy', value: level, timestamp: new Date().toISOString() });
+                if (sensorData.length > 100) sensorData.shift(); // keep last 100
+                localStorage.setItem('sa_sensors', JSON.stringify(sensorData));
+            } catch(e) {
+                digital.innerText = 'N/A';
+                chargeSpan.innerText = 'Unavailable';
+            }
         }
 
-        setInterval(updateEnergy, 500);
         updateEnergy();
+        setInterval(updateEnergy, 2000);
     </script>
 </body>
 </html>
