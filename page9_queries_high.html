@@ -4,50 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sa-marduk-V9 · High Queries</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            font-size: 20px;
+        }
+        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
+        h1 { color: #58a6ff; font-size: 2.2rem; }
+        .back-btn {
+            background: #161b22;
+            border: 2px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .back-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+        .card {
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .alert-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #0d1117;
+            border-left: 6px solid #f85149;
+            border-radius: 6px;
+            font-size: 1.2rem;
+        }
+        .alert-item.ok {
+            border-left-color: #3fb950;
+        }
+        footer {
+            margin-top: 40px;
+            border-top: 2px solid #30363d;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>High Priority Queries (Level 3)</h1>
-        <a href="index.html">← Back</a>
+        <h1>🚨 High Priority Alerts</h1>
+        <a href="index.html" class="back-btn">← Back to Home</a>
     </header>
 
-    <section>
-        <p>Groups 3, 6, 9 – critical importance</p>
-        <ul id="high-query-list">
-            <li>Loading from external source...</li>
-        </ul>
-    </section>
+    <div class="card" id="alertsContainer">
+        <p style="font-size:1.4rem;">Checking system status...</p>
+    </div>
 
-    <footer>
-        <p>All rights reserved · Sa Akhran®</p>
-    </footer>
+    <footer>All rights reserved · Sa Akhran®</footer>
 
-    <script src="assets/js/app.js"></script>
     <script>
-        function loadHighQueries() {
-            fetch('/api/high_queries')
-                .then(r => r.json())
-                .then(data => {
-                    const ul = document.getElementById('high-query-list');
-                    ul.innerHTML = '';
-                    if (data.queries && data.queries.length) {
-                        data.queries.forEach(q => {
-                            const li = document.createElement('li');
-                            li.textContent = q;
-                            ul.appendChild(li);
-                        });
-                    } else {
-                        ul.innerHTML = '<li>No high-priority queries at this time.</li>';
-                    }
-                })
-                .catch(() => {
-                    document.getElementById('high-query-list').innerHTML = '<li>Error connecting to source.</li>';
-                });
-        }
+        async function checkAlerts() {
+            const container = document.getElementById('alertsContainer');
+            const alerts = [];
+            try {
+                const battery = await navigator.getBattery();
+                if (battery.level < 0.2) alerts.push('⚠️ Battery below 20% – critical');
+                if (!battery.charging) alerts.push('🔌 Device not charging');
+            } catch(e) {}
+            if (navigator.connection) {
+                if (navigator.connection.downlink < 1) alerts.push('📶 Very slow network (<1 Mbps)');
+                if (navigator.connection.rtt > 300) alerts.push('⏱️ High latency (>300ms)');
+            }
+            // Also check storage from localStorage (latest)
+            const sensors = JSON.parse(localStorage.getItem('sa_sensors') || '[]');
+            const storageEntries = sensors.filter(s => s.type === 'storage');
+            if (storageEntries.length > 0) {
+                const last = storageEntries[storageEntries.length-1];
+                if (last.value > 80) alerts.push('💾 Storage usage > 80%');
+            }
 
-        loadHighQueries();
-        setInterval(loadHighQueries, 4000);
+            if (alerts.length === 0) {
+                container.innerHTML = `<div class="alert-item ok">✅ All systems normal.</div>`;
+            } else {
+                container.innerHTML = alerts.map(a => `<div class="alert-item">${a}</div>`).join('');
+            }
+        }
+        checkAlerts();
+        setInterval(checkAlerts, 5000);
     </script>
 </body>
 </html>
