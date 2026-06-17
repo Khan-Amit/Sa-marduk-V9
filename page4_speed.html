@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa-marduk-V9 · Speed</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Data Handling Speed</h1>
+        <a href="index.html">← Back</a>
+    </header>
+
+    <section>
+        <div id="speed-display">
+            <span id="speed-value">0.00</span> <span id="speed-unit">MB/s</span>
+        </div>
+        <p>Live from network / disk I/O</p>
+    </section>
+
+    <footer>
+        <p>All rights reserved · Sa Akhran®</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        const speedVal = document.getElementById('speed-value');
+        const speedUnit = document.getElementById('speed-unit');
+
+        function updateSpeed() {
+            fetch('/api/speed_rate')
+                .then(r => r.json())
+                .then(data => {
+                    speedVal.innerText = data.mbps ? (data.mbps / 8).toFixed(2) : data.mb_s.toFixed(2);
+                    speedUnit.innerText = 'MB/s';
+                })
+                .catch(() => speedVal.innerText = '--');
+        }
+
+        setInterval(updateSpeed, 600);
+        updateSpeed();
+    </script>
+</body>
+</html>
