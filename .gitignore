@@ -1,12 +1,36 @@
-# FILE: .gitignore
-# Ignore backend – hidden layer
-backend/
+# ============================================
+# Sa Akhran® – Virus & Spam Guard
+# All rights reserved – Seliim Ahmed
+# ============================================
 
-# Local temp files
-*.tmp
+# --- Python / Backend ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+.venv/
+
+# --- Local Runtime Data (Prevent committing logs/ quarantine) ---
+logs/
+quarantine/
 *.log
-*.swp
-.DS_Store
+*.tmp
 
-# OS generated
+# --- Config (Keep your local config private; track only the example) ---
+config.json
+!config.example.json
+
+# --- OS / Editor Files ---
+.DS_Store
 Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# --- Miscellaneous ---
+*.zip
+*.tar.gz
+*.7z
