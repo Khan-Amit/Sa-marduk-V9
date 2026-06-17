@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sa-marduk-V9</title>
+    <title>Sa-marduk-V9 · Home</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
@@ -11,13 +11,30 @@
             background: #0d1117;
             color: #c9d1d9;
             padding: 20px;
-            max-width: 700px;
+            max-width: 750px;
             margin: auto;
             font-size: 20px;
         }
-        header { border-bottom: 2px solid #30363d; padding: 15px 0; margin-bottom: 25px; }
-        h1 { color: #58a6ff; font-size: 2.5rem; }
-        .sub { color: #8b949e; font-size: 1.2rem; }
+        header {
+            border-bottom: 2px solid #30363d;
+            padding: 15px 0;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        h1 {
+            color: #58a6ff;
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+        }
+        .sub {
+            color: #8b949e;
+            font-size: 1.2rem;
+        }
+        .contact {
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-top: 5px;
+        }
         .nav-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -28,17 +45,19 @@
             background: #161b22;
             border: 2px solid #30363d;
             border-radius: 12px;
-            padding: 25px 10px;
+            padding: 22px 10px;
             text-align: center;
             color: #c9d1d9;
             text-decoration: none;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: bold;
+            transition: 0.2s ease;
         }
         .nav-btn:hover {
             background: #1c2333;
             border-color: #58a6ff;
             color: #58a6ff;
+            transform: scale(1.02);
         }
         .nav-btn small {
             display: block;
@@ -46,6 +65,23 @@
             font-size: 0.8rem;
             color: #8b949e;
             margin-top: 5px;
+        }
+        .nav-btn.download-btn {
+            border-color: #238636;
+        }
+        .nav-btn.download-btn:hover {
+            border-color: #3fb950;
+            color: #3fb950;
+        }
+        .nav-btn.engine-btn {
+            border-color: #d29922;
+        }
+        .nav-btn.engine-btn:hover {
+            border-color: #f0b33d;
+            color: #f0b33d;
+        }
+        .full-width {
+            grid-column: 1 / -1;
         }
         footer {
             margin-top: 40px;
@@ -55,25 +91,43 @@
             font-size: 0.9rem;
             color: #8b949e;
         }
-        @media (max-width: 500px) { .nav-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 500px) {
+            .nav-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: 1; }
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>📱 Sa-marduk-V9</h1>
+        <h1>🛡️ Sa-marduk-V9</h1>
         <p class="sub">Virus & Spam Guard · Seliim Ahmed</p>
-        <p style="font-size:0.9rem; color:#8b949e;">amit.khanna.1082@gmail.com</p>
+        <p class="contact">amit.khanna.1082@gmail.com</p>
     </header>
 
     <div class="nav-grid">
+        <!-- Existing Pages -->
         <a href="page2_login.html" class="nav-btn">🔐 Login <small>Save identity</small></a>
-        <a href="page3_energy.html" class="nav-btn">⚡ Energy <small>Battery</small></a>
-        <a href="page4_speed.html" class="nav-btn">🌐 Speed <small>Network</small></a>
-        <a href="page7_quarantine.html" class="nav-btn">🛡️ Quarantine <small>Storage</small></a>
-        <a href="page9_queries_high.html" class="nav-btn">🚨 High Queries <small>Alerts</small></a>
+        <a href="page3_energy.html" class="nav-btn">⚡ Energy <small>Battery & charging</small></a>
+        <a href="page4_speed.html" class="nav-btn">🌐 Speed <small>Network downlink</small></a>
+        <a href="page7_quarantine.html" class="nav-btn">🛡️ Quarantine <small>Storage threats</small></a>
+        <a href="page9_queries_high.html" class="nav-btn">🚨 High Queries <small>System alerts</small></a>
         <a href="page5_dashboard.html" class="nav-btn">📊 Dashboard <small>All stats</small></a>
+
+        <!-- ***** NEW: The Real Engine (36 Groups + Brahma + Enigma) ***** -->
+        <a href="analyze.html" class="nav-btn engine-btn full-width">
+            🧠 Analyze Engine
+            <small>36‑Group Classification · Voice of Brahma · Enigma Output</small>
+        </a>
+
+        <!-- ***** NEW: Download Option (like Count X SA) ***** -->
+        <a href="analyze.html" download="Sa_Akhran_Engine.html" class="nav-btn download-btn full-width">
+            📥 Download Engine
+            <small>Save the full analyzer as a standalone HTML file</small>
+        </a>
     </div>
 
-    <footer>All rights reserved · Sa Akhran®</footer>
+    <footer>
+        All rights reserved · Sa Akhran®
+    </footer>
 </body>
 </html>
