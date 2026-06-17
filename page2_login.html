@@ -4,7 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sa-marduk-V9 · Login</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:monospace; background:#0b0b0b; color:#b0b0b0; padding:20px; max-width:800px; margin:0 auto; }
+        header, footer { border-bottom:1px solid #2a2a2a; padding:10px 0; margin-bottom:20px; }
+        footer { border-top:1px solid #2a2a2a; border-bottom:none; margin-top:40px; text-align:center; font-size:0.8em; color:#555; }
+        h1 { color:#0f0; font-size:1.6em; }
+        a { color:#0f0; text-decoration:none; }
+        a:hover { text-decoration:underline; }
+        section { background:#111; padding:20px; border-radius:6px; border:1px solid #1f1f1f; }
+        input, button { display:block; width:100%; padding:10px; margin:8px 0; background:#1a1a1a; border:1px solid #333; color:#b0b0b0; font-family:monospace; border-radius:4px; }
+        button { background:#0f0; color:#000; font-weight:bold; border:none; cursor:pointer; }
+        button:hover { background:#5f5; }
+        #login-result { margin-top:15px; font-weight:bold; }
+    </style>
 </head>
 <body>
     <header>
@@ -14,11 +27,11 @@
     <section>
         <form id="login-form">
             <label>Full Name</label>
-            <input type="text" id="user-name" placeholder="e.g. Seliim Ahmed" required>
+            <input type="text" id="user-name" placeholder="Seliim Ahmed" required>
             <label>Phone Number</label>
-            <input type="tel" id="user-phone" placeholder="+91 98765 43210" required>
+            <input type="tel" id="user-phone" placeholder="+66615729906" required>
             <label>IMEI (or Device ID)</label>
-            <input type="text" id="user-imei" placeholder="15-digit IMEI" required>
+            <input type="text" id="user-imei" placeholder="865926067381640" required>
             <button type="submit">Bind Session</button>
         </form>
         <div id="login-result"></div>
@@ -34,17 +47,13 @@
             const imei = document.getElementById('user-imei').value.trim();
             const resultDiv = document.getElementById('login-result');
 
-            // Hardcoded valid credentials (exactly as per your image)
-            const validName = 'Seliim Ahmed';
-            const validImei = '865926067381640';
-
-            if (name === validName && imei === validImei) {
-                resultDiv.innerText = 'Bind successful. Welcome ' + name;
+            // Valid credentials (exactly as per owner)
+            if (name === 'Seliim Ahmed' && imei === '865926067381640') {
+                resultDiv.innerText = '✅ Bind successful. Welcome ' + name;
                 resultDiv.style.color = '#0f0';
-                // Store session locally
                 localStorage.setItem('session', JSON.stringify({name, phone, imei}));
             } else {
-                resultDiv.innerText = 'Bind failed. Check Name and IMEI.';
+                resultDiv.innerText = '❌ Bind failed. Check Name and IMEI.';
                 resultDiv.style.color = '#f00';
             }
         };
