@@ -1,0 +1,10 @@
+{
+  "group_7": [".exe", ".com", ".scr", ".pif"],
+  "group_8": [".dll", ".so", ".dylib", ".sys", ".drv"],
+  "group_9": [".js", ".py", ".pl", ".rb", ".sh", ".bash", ".vbs", ".ps1", ".cmd", ".bat"],
+  "group_10": [".xlsm", ".docm", ".pptm", ".xlam", ".dotm"],
+  "group_11": [".apk", ".ipa", ".xapk", ".aab"],
+  "group_12": [".bin", ".fw", ".rom", ".img"],
+  "group_35": [".encrypted", ".crypted", ".locked", ".ransom", ".decrypt", ".bitcoin", ".pay"],
+  "group_31": [".miner", ".crypto", ".xmrig", ".cgminer"]
+}
