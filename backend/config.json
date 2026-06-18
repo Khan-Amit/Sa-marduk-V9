@@ -1,0 +1,38 @@
+{
+  "watches": [
+    {
+      "path": "/mnt/music",
+      "allowed_groups": [19, 20, 21, 22, 23, 24],
+      "risk_level": "low",
+      "cpu_threshold": 90
+    },
+    {
+      "path": "/mnt/code",
+      "allowed_groups": [7, 8, 9, 10, 11, 12],
+      "risk_level": "medium",
+      "cpu_threshold": 80
+    },
+    {
+      "path": "/mnt/backups",
+      "allowed_groups": [25, 26, 27, 28, 29, 30],
+      "risk_level": "low",
+      "cpu_threshold": 90
+    },
+    {
+      "path": "/mnt/secure",
+      "allowed_groups": [1, 2, 3, 4, 5, 6, 31, 32, 33, 34, 35, 36],
+      "risk_level": "high",
+      "cpu_threshold": 60
+    },
+    {
+      "path": "/mnt/incoming",
+      "allowed_groups": [0, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36],
+      "risk_level": "high",
+      "cpu_threshold": 50
+    }
+  ],
+  "quarantine_path": "/var/quarantine/sa_akhran",
+  "log_path": "/var/log/sa_akhran",
+  "energy_spike_cpu": 80,
+  "energy_spike_disk": 100
+}
