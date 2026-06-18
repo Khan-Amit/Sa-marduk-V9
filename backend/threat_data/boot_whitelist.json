@@ -1,0 +1,11 @@
+{
+  "allowed_kernels": [
+    "5.15.0-91-generic",
+    "5.15.0-92-generic",
+    "5.15.0-93-generic"
+  ],
+  "kernel_hashes": {
+    "vmlinuz-5.15.0-91-generic": "abc123def456...",
+    "initrd.img-5.15.0-91-generic": "def456abc123..."
+  }
+}
