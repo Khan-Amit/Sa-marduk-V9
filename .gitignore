@@ -1,9 +1,3 @@
-# ============================================
-# Sa Akhran® – Virus & Spam Guard
-# All rights reserved – Seliim Ahmed
-# ============================================
-
-# --- Python / Backend ---
 __pycache__/
 *.pyc
 *.pyo
@@ -11,26 +5,18 @@ __pycache__/
 venv/
 env/
 .venv/
-
-# --- Local Runtime Data (Prevent committing logs/ quarantine) ---
 logs/
 quarantine/
 *.log
 *.tmp
-
-# --- Config (Keep your local config private; track only the example) ---
 config.json
 !config.example.json
-
-# --- OS / Editor Files ---
 .DS_Store
 Thumbs.db
 *.swp
 *.swo
 .vscode/
 .idea/
-
-# --- Miscellaneous ---
 *.zip
 *.tar.gz
 *.7z
